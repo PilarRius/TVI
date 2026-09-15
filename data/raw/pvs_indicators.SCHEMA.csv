@@ -1,0 +1,7 @@
+iso3,indicator_code,score,assessment_year,source,source_url,missing_data_flag
+# Example schema for real PVS data. Delete comment lines before use.
+# FRA,IV-1A,4.0,2022,WOAH PVS Evaluation Report,https://www.woah.org/,False
+# FRA,IV-1B,3.5,2022,WOAH PVS Evaluation Report,https://www.woah.org/,False
+# FRA,IV-4,4.0,2022,WOAH PVS Evaluation Report,https://www.woah.org/,False
+# FRA,IV-6,3.0,2022,WOAH PVS Evaluation Report,https://www.woah.org/,False
+# FRA,IV-7,,2022,WOAH PVS Evaluation Report,https://www.woah.org/,True

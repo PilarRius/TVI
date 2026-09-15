@@ -1,0 +1,8 @@
+{
+  "n_countries": 191,
+  "n_with_tvi": 191,
+  "disease_module": "MOCK",
+  "economic_module": "MOCK",
+  "legal_module": "PLACEHOLDER",
+  "pvs_source": "placeholder"
+}

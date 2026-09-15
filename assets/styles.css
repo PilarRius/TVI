@@ -1,0 +1,586 @@
+/* Trade Vulnerability Index — institutional visual system */
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap");
+
+:root {
+  --navy: #0B3A5B;
+  --slate: #1F3A4D;
+  --teal: #1A6B6B;
+  --steel: #4A6FA5;
+  --sand: #F4F6F8;
+  --paper: #FFFFFF;
+  --ink: #1A2332;
+  --muted: #5A6A7A;
+  --line: #D0D7DE;
+  --exposure: #B85C38;
+  --economic: #8B6914;
+  --preparedness: #2E6B5E;
+  --vulnerability: #8B3A4A;
+  --radius: 2px;
+  --font: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-display: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+
+html, body {
+  font-family: var(--font);
+  color: var(--ink);
+  background: var(--sand);
+  margin: 0;
+  padding: 0;
+}
+
+/* ---- Shell ---- */
+.tvi-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.tvi-header {
+  background: linear-gradient(135deg, var(--navy) 0%, #0F4A6E 55%, var(--teal) 140%);
+  color: #fff;
+  padding: 1.25rem 2rem 1rem;
+  border-bottom: 3px solid var(--teal);
+}
+
+.tvi-header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.tvi-brand {
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.85;
+  font-weight: 500;
+  margin: 0 0 0.35rem;
+}
+
+.tvi-title {
+  font-family: var(--font-display);
+  font-size: 1.55rem;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.tvi-subtitle {
+  margin: 0.35rem 0 0;
+  font-size: 0.9rem;
+  opacity: 0.88;
+  font-weight: 400;
+}
+
+.tvi-header-meta {
+  text-align: right;
+  font-size: 0.8rem;
+  opacity: 0.9;
+}
+
+.tvi-main {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.25rem 1.5rem 3rem;
+  flex: 1;
+}
+
+/* ---- Tabs ---- */
+.tvi-shell .nav-tabs {
+  border-bottom: 1px solid var(--line);
+  gap: 0.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.tvi-shell .nav-tabs .nav-link {
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding: 0.65rem 1rem;
+  border-radius: 0;
+  background: transparent;
+}
+
+.tvi-shell .nav-tabs .nav-link:hover {
+  color: var(--navy);
+  border-color: transparent;
+  background: transparent;
+}
+
+.tvi-shell .nav-tabs .nav-link.active {
+  color: var(--navy);
+  border-bottom-color: var(--teal);
+  background: transparent;
+  font-weight: 600;
+}
+
+/* ---- Controls ---- */
+.tvi-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+}
+
+.tvi-controls .form-group {
+  margin-bottom: 0;
+  min-width: 180px;
+}
+
+.tvi-controls label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.tvi-controls .form-control,
+.tvi-controls .form-select,
+.tvi-controls select {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+.tvi-controls .form-control:focus,
+.tvi-controls select:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 2px rgba(26, 107, 107, 0.15);
+}
+
+/* ---- Stats strip ---- */
+.tvi-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  margin-bottom: 1.25rem;
+}
+
+.tvi-stat {
+  background: var(--paper);
+  padding: 0.85rem 1.1rem;
+}
+
+.tvi-stat-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-weight: 600;
+  margin: 0;
+}
+
+.tvi-stat-value {
+  font-size: 1.45rem;
+  font-weight: 600;
+  color: var(--navy);
+  margin: 0.15rem 0 0;
+  letter-spacing: -0.02em;
+}
+
+.tvi-stat-note {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin: 0.1rem 0 0;
+}
+
+/* ---- Panels ---- */
+.tvi-panel {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  padding: 1.15rem 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.tvi-panel h2,
+.tvi-panel h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--navy);
+  margin: 0 0 0.75rem;
+  letter-spacing: 0.01em;
+}
+
+.tvi-panel-intro {
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin: -0.35rem 0 1rem;
+  line-height: 1.45;
+  max-width: 62ch;
+}
+
+.tvi-grid-2 {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 1rem;
+}
+
+.tvi-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+/* ---- Scorecards ---- */
+.tvi-scorecard {
+  border-top: 3px solid var(--line);
+  padding: 1rem 0 0.25rem;
+}
+
+.tvi-scorecard.exposure { border-top-color: var(--exposure); }
+.tvi-scorecard.economic { border-top-color: var(--economic); }
+.tvi-scorecard.preparedness { border-top-color: var(--preparedness); }
+
+.tvi-scorecard-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  font-weight: 600;
+  margin: 0;
+}
+
+.tvi-scorecard-score {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0.2rem 0;
+  letter-spacing: -0.03em;
+}
+
+.tvi-scorecard-score span {
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.tvi-scorecard-class {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.45rem;
+  background: var(--sand);
+  color: var(--slate);
+  margin-bottom: 0.5rem;
+}
+
+.tvi-scorecard-class.very-low { background: #E8F0F5; color: #2A5A70; }
+.tvi-scorecard-class.low { background: #D6E8F0; color: #1F4A60; }
+.tvi-scorecard-class.moderate { background: #F0E8D8; color: #6B5420; }
+.tvi-scorecard-class.high { background: #F0D8D8; color: #6B2D3C; }
+.tvi-scorecard-class.very-high { background: #E8C8D0; color: #5A2030; }
+.tvi-scorecard-class.na { background: var(--sand); color: var(--muted); }
+
+.tvi-scorecard-explain {
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.tvi-scorecard-contrib {
+  font-size: 0.78rem;
+  margin-top: 0.55rem;
+  color: var(--slate);
+  font-weight: 500;
+}
+
+/* ---- Country header ---- */
+.tvi-country-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 1.1rem;
+  margin-bottom: 1.25rem;
+}
+
+.tvi-country-name {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--navy);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.tvi-country-disease {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0.3rem 0 0;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+}
+
+.tvi-tvi-block {
+  text-align: right;
+}
+
+.tvi-tvi-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  font-weight: 600;
+  margin: 0;
+}
+
+.tvi-tvi-score {
+  font-size: 2.75rem;
+  font-weight: 600;
+  color: var(--vulnerability);
+  margin: 0;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.tvi-tvi-score span {
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+/* ---- Drivers ---- */
+.tvi-drivers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.tvi-driver-col h4 {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 0 0 0.65rem;
+  font-weight: 600;
+}
+
+.tvi-driver-col.risk h4 { color: var(--contribute); }
+.tvi-driver-col.protect h4 { color: var(--protective); }
+
+.tvi-driver-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tvi-driver-list li {
+  font-size: 0.88rem;
+  padding: 0.55rem 0.7rem;
+  border-left: 3px solid var(--line);
+  margin-bottom: 0.4rem;
+  background: var(--sand);
+  line-height: 1.35;
+}
+
+.tvi-driver-col.risk li { border-left-color: var(--contribute); }
+.tvi-driver-col.protect li { border-left-color: var(--protective); }
+
+.tvi-empty {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* ---- Legal detail ---- */
+.tvi-legal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.tvi-legal-table th {
+  text-align: left;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-weight: 600;
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.tvi-legal-table td {
+  padding: 0.65rem 0.6rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.tvi-missing {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.tvi-coverage {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--slate);
+  background: var(--sand);
+  padding: 0.4rem 0.75rem;
+  margin-bottom: 1rem;
+}
+
+/* ---- Methodology ---- */
+.tvi-flow {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 1.25rem 0;
+}
+
+.tvi-flow-node {
+  flex: 1;
+  min-width: 140px;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  background: var(--sand);
+  text-align: center;
+}
+
+.tvi-flow-node.risk { border-top: 3px solid var(--exposure); }
+.tvi-flow-node.econ { border-top: 3px solid var(--economic); }
+.tvi-flow-node.prep { border-top: 3px solid var(--preparedness); }
+.tvi-flow-node.tvi {
+  border-top: 3px solid var(--vulnerability);
+  background: #F8F0F2;
+}
+
+.tvi-flow-node strong {
+  display: block;
+  font-size: 0.8rem;
+  margin-bottom: 0.25rem;
+}
+
+.tvi-flow-node span {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.tvi-flow-plus {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  color: var(--muted);
+  font-size: 1.1rem;
+}
+
+.tvi-prose h3 {
+  font-size: 1rem;
+  color: var(--navy);
+  margin: 1.5rem 0 0.5rem;
+}
+
+.tvi-prose p, .tvi-prose li {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--slate);
+}
+
+.tvi-prose ul {
+  padding-left: 1.2rem;
+}
+
+.tvi-callout {
+  border-left: 3px solid var(--steel);
+  background: var(--sand);
+  padding: 0.85rem 1rem;
+  margin: 1rem 0;
+  font-size: 0.88rem;
+  color: var(--slate);
+}
+
+.tvi-callout strong {
+  color: var(--navy);
+}
+
+/* ---- Tables ---- */
+.tvi-shell table.dataTable,
+.tvi-rank-table {
+  width: 100%;
+  font-size: 0.85rem;
+  border-collapse: collapse;
+}
+
+.tvi-rank-table th {
+  text-align: left;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+  padding: 0.45rem 0.5rem;
+}
+
+.tvi-rank-table td {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.tvi-rank-table tr:hover td {
+  background: var(--sand);
+  cursor: default;
+}
+
+/* ---- Footer ---- */
+.tvi-footer {
+  border-top: 1px solid var(--line);
+  padding: 1rem 2rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  background: var(--paper);
+  text-align: center;
+}
+
+/* ---- Legend ---- */
+.tvi-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tvi-legend-bar {
+  height: 10px;
+  width: 140px;
+  background: linear-gradient(90deg, #E8F0F5, #5B8FA8, #6B2D3C);
+  border-radius: 1px;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 960px) {
+  .tvi-grid-2,
+  .tvi-grid-3,
+  .tvi-drivers,
+  .tvi-stats {
+    grid-template-columns: 1fr;
+  }
+  .tvi-header-meta { text-align: left; }
+  .tvi-tvi-block { text-align: left; }
+}
+
+/* Shiny widget tweaks */
+.tvi-shell .html-fill-container {
+  min-height: 0;
+}
