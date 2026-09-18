@@ -1,0 +1,21 @@
+rmt_region,country,disease_status_fmd,disease_status_ppr,disease_status_lsd,disease_status_rvf,disease_status_sgp,iso3,source,source_year
+North Africa,Mauritania,3,3,3,3,3,MRT,EuFMD RMT_FAST curated disease status (rv20231017),2023
+North Africa,Morocco,1,2,0,0,3,MAR,EuFMD RMT_FAST curated disease status (rv20231017),2023
+North Africa,Tunisia,2,2,0,0,3,TUN,EuFMD RMT_FAST curated disease status (rv20231017),2023
+North Africa,Algeria,2,2,0,0,3,DZA,EuFMD RMT_FAST curated disease status (rv20231017),2023
+North Africa,Mali,3,3,3,3,3,MLI,EuFMD RMT_FAST curated disease status (rv20231017),2023
+SEEN,Afghanistan,3,3,0,0,3,AFG,EuFMD RMT_FAST curated disease status (rv20231017),2023
+SEEN,Pakistan,3,3,2,0,3,PAK,EuFMD RMT_FAST curated disease status (rv20231017),2023
+SEEN,Iraq,3,2,2,0,3,IRQ,EuFMD RMT_FAST curated disease status (rv20231017),2023
+SEEN,Turkey,2,2,1,0,2,TUR,EuFMD RMT_FAST curated disease status (rv20231017),2023
+SEEN,Georgia,1,1,1,0,2,GEO,EuFMD RMT_FAST curated disease status (rv20231017),2023
+SEEN,Armenia,1,1,1,0,2,ARM,EuFMD RMT_FAST curated disease status (rv20231017),2023
+SEEN,Azerbaijan,1,1,1,0,2,AZE,EuFMD RMT_FAST curated disease status (rv20231017),2023
+SEEN,Iran,3,2,2,0,3,IRN,EuFMD RMT_FAST curated disease status (rv20231017),2023
+Middle East,Syria,3,3,3,0,3,SYR,EuFMD RMT_FAST curated disease status (rv20231017),2023
+Middle East,Palestine,3,3,1,0,3,PSE,EuFMD RMT_FAST curated disease status (rv20231017),2023
+Middle East,Sudan,3,3,2,3,3,SDN,EuFMD RMT_FAST curated disease status (rv20231017),2023
+Middle East,Libya,2,2,0,1,3,LBY,EuFMD RMT_FAST curated disease status (rv20231017),2023
+Middle East,Egypt,3,2,3,1,2,EGY,EuFMD RMT_FAST curated disease status (rv20231017),2023
+Middle East,Lebanon,2,2,2,0,3,LBN,EuFMD RMT_FAST curated disease status (rv20231017),2023
+Middle East,Jordan,3,2,1,0,3,JOR,EuFMD RMT_FAST curated disease status (rv20231017),2023

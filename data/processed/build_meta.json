@@ -1,8 +1,12 @@
 {
   "n_countries": 191,
   "n_with_tvi": 191,
-  "disease_module": "MOCK",
+  "n_with_disease": 20,
+  "n_with_legal": 34,
+  "disease_module": "RMT_PROVISIONAL",
   "economic_module": "MOCK",
-  "legal_module": "PLACEHOLDER",
-  "pvs_source": "placeholder"
+  "legal_module": "PUBLIC_REPORTS_OR_NA",
+  "rmt_source": "data/raw/rmt",
+  "pvs_source": "public_pvsis",
+  "missing_label": "N/A"
 }

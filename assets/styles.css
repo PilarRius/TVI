@@ -512,6 +512,179 @@ html, body {
   color: var(--navy);
 }
 
+/* ---- Data source cards (Methodology) ---- */
+.tvi-source-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.85rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.tvi-source-card {
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--steel);
+  background: var(--paper);
+  padding: 0.9rem 1rem 0.75rem;
+}
+
+.tvi-source-card.primary {
+  border-left-color: var(--preparedness);
+  background: #F4F8F7;
+}
+
+.tvi-source-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  align-items: baseline;
+  margin-bottom: 0.55rem;
+}
+
+.tvi-source-head h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--navy);
+  font-weight: 600;
+}
+
+.tvi-source-role {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  color: var(--teal);
+}
+
+.tvi-source-card.primary .tvi-source-role {
+  color: var(--preparedness);
+}
+
+.tvi-source-meta {
+  display: grid;
+  grid-template-columns: 8.5rem 1fr;
+  gap: 0.35rem 0.75rem;
+  margin: 0 0 0.65rem;
+  font-size: 0.84rem;
+}
+
+.tvi-source-meta dt {
+  margin: 0;
+  font-weight: 600;
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-top: 0.15rem;
+}
+
+.tvi-source-meta dd {
+  margin: 0;
+  color: var(--slate);
+  line-height: 1.45;
+}
+
+.tvi-source-proposal {
+  margin: 0;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: var(--slate);
+  border-top: 1px solid var(--line);
+  padding-top: 0.55rem;
+}
+
+.tvi-questions-intro {
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin: -0.25rem 0 0.75rem;
+  max-width: 72ch;
+  line-height: 1.45;
+}
+
+.tvi-model-questions {
+  margin: 0 0 1.5rem;
+  padding-left: 1.25rem;
+  background: var(--sand);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--steel);
+  padding: 0.85rem 1rem 0.85rem 2rem;
+}
+
+.tvi-model-questions li {
+  font-size: 0.86rem;
+  line-height: 1.45;
+  color: var(--slate);
+  margin-bottom: 0.55rem;
+}
+
+.tvi-model-questions li:last-child {
+  margin-bottom: 0;
+}
+
+.tvi-prose h4 {
+  font-size: 0.92rem;
+  color: var(--navy);
+  margin: 1.15rem 0 0.45rem;
+}
+
+.tvi-prose ol {
+  padding-left: 1.2rem;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--slate);
+}
+
+.tvi-prose ol li {
+  margin-bottom: 0.35rem;
+}
+
+.tvi-legal-controls {
+  align-items: flex-start;
+}
+
+.tvi-legal-controls .checkbox {
+  margin: 0.35rem 0 0;
+}
+
+.tvi-legal-controls .checkbox label {
+  font-size: 0.82rem;
+  color: var(--slate);
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+}
+
+.tvi-legal-select-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  width: 100%;
+  margin-top: -0.15rem;
+}
+
+.tvi-legal-hint {
+  color: var(--muted);
+  line-height: 1.35;
+  max-width: 52ch;
+}
+
+/* Green frame on the Legal tab country selector (options themselves cannot be coloured reliably) */
+select#legal_country {
+  min-width: 280px;
+  border: 1.5px solid var(--preparedness) !important;
+  color: var(--preparedness);
+  font-weight: 600;
+  background-color: #F4F8F7;
+}
+
+select#legal_country:focus {
+  border-color: var(--preparedness) !important;
+  box-shadow: 0 0 0 2px rgba(46, 107, 94, 0.2);
+}
+
 /* ---- Tables ---- */
 .tvi-shell table.dataTable,
 .tvi-rank-table {

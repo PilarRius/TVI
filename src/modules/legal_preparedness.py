@@ -111,16 +111,21 @@ def load_pvs_file(path) -> pd.DataFrame:
     else:
         raise ValueError(f"Unsupported file type: {path}")
 
+    # Avoid duplicate columns if file already has both indicator and indicator_code
     rename = {
         "ISO3": "iso3",
         "Iso3": "iso3",
         "Country": "country",
         "Indicator": "indicator_code",
-        "indicator": "indicator_code",
         "Score": "score",
         "Year": "assessment_year",
     }
+    # Only rename "indicator" → indicator_code when indicator_code is absent
+    if "indicator_code" not in df.columns and "indicator" in df.columns:
+        rename["indicator"] = "indicator_code"
     df = df.rename(columns={k: v for k, v in rename.items() if k in df.columns})
+    # Collapse accidental duplicate column names
+    df = df.loc[:, ~df.columns.duplicated()]
     required = {"iso3", "indicator_code", "score"}
     missing_cols = required - set(df.columns)
     if missing_cols:
@@ -134,9 +139,15 @@ def load_pvs_file(path) -> pd.DataFrame:
         df["source"] = "User-provided file"
     if "score_scale" not in df.columns:
         df["score_scale"] = "1-5"
-    if "indicator_name" not in df.columns:
+    if "indicator_name" not in df.columns or df["indicator_name"].isna().all():
         df["indicator_name"] = df["indicator_code"].map(
             lambda c: LEGAL_INDICATORS.get(c, {}).get("name", c)
+        )
+    else:
+        # Replace bare codes with full names where possible
+        df["indicator_name"] = df.apply(
+            lambda r: LEGAL_INDICATORS.get(r["indicator_code"], {}).get("name", r["indicator_name"]),
+            axis=1,
         )
     if "indicator" not in df.columns:
         df["indicator"] = df["indicator_code"]

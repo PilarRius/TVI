@@ -11,13 +11,12 @@ from pathlib import Path
 
 import pandas as pd
 
-from config.settings import CLEAN_DIR, PROCESSED_DIR, RAW_DIR
+from config.settings import CLEAN_DIR, PROCESSED_DIR, RAW_DIR, LEGAL_INDICATORS
 from config.woah_regions import ISO3_TO_NAME
 from src.modules.disease_exposure import generate_disease_exposure
 from src.modules.economic_sensitivity import generate_economic_sensitivity
 from src.modules.legal_preparedness import (
     compute_legal_preparedness,
-    generate_placeholder_pvs,
     load_pvs_file,
 )
 from src.calculations.tvi import compute_tvi
@@ -28,33 +27,87 @@ def _ensure_dirs() -> None:
         d.mkdir(parents=True, exist_ok=True)
 
 
+def _empty_legal_grid(iso3_list: list[str]) -> pd.DataFrame:
+    """Full country × indicator grid with explicit null scores (N/A)."""
+    rows = []
+    for iso3 in iso3_list:
+        for code, meta in LEGAL_INDICATORS.items():
+            rows.append(
+                {
+                    "country": ISO3_TO_NAME.get(iso3, iso3),
+                    "iso3": iso3,
+                    "assessment_year": None,
+                    "pvs_assessment_version": None,
+                    "indicator": code,
+                    "indicator_code": code,
+                    "indicator_name": meta["name"],
+                    "score": None,
+                    "score_scale": "1-5",
+                    "source": "No public PVS extract available",
+                    "source_url": None,
+                    "data_availability": "unavailable",
+                    "missing_data_flag": True,
+                }
+            )
+    return pd.DataFrame(rows)
+
+
 def _load_or_generate_pvs(iso3_list: list[str]) -> pd.DataFrame:
     """
-    Prefer a user-supplied file in data/raw/; otherwise generate placeholders.
-
-    Supported filenames:
-      pvs_indicators.csv | .xlsx | .json
+    Load legal indicators from data/raw/. Drop any leftover placeholder rows.
+    Expand to a full country grid so missing countries/indicators are explicit N/A.
     """
     candidates = [
         RAW_DIR / "pvs_indicators.csv",
         RAW_DIR / "pvs_indicators.xlsx",
         RAW_DIR / "pvs_indicators.json",
+        RAW_DIR / "pvsis_public" / "pvs_indicators_public_only.csv",
     ]
+    raw = None
+    source_path = None
     for path in candidates:
         if path.exists():
             print(f"Loading legal data from {path}")
-            return load_pvs_file(path)
+            raw = load_pvs_file(path)
+            source_path = path
+            break
 
-    print("No raw PVS file found — generating PLACEHOLDER legal scores.")
-    print(
-        "Note: WOAH PVSIS publishes reports; no public bulk indicator API "
-        "was available for this prototype. Drop a file at data/raw/pvs_indicators.csv "
-        "to replace placeholders."
-    )
-    raw = generate_placeholder_pvs(iso3_list)
-    raw.to_csv(RAW_DIR / "pvs_indicators_placeholder.csv", index=False)
-    raw.to_parquet(RAW_DIR / "pvs_indicators_placeholder.parquet", index=False)
-    return raw
+    grid = _empty_legal_grid(iso3_list)
+    if raw is None:
+        print(
+            "No raw PVS file found — legal scores will be N/A for all countries. "
+            "Run `python -m scripts.ingest_public_pvs` to populate public extracts."
+        )
+        return grid
+
+    # Never keep synthetic placeholders in the live dataset
+    if "data_availability" in raw.columns:
+        raw = raw[raw["data_availability"].astype(str).str.lower() != "placeholder"].copy()
+    if "source" in raw.columns:
+        raw = raw[~raw["source"].astype(str).str.contains("PLACEHOLDER", case=False, na=False)].copy()
+
+    if raw.empty:
+        print("Legal file had no non-placeholder rows — all legal scores N/A.")
+        return grid
+
+    raw = raw.drop_duplicates(subset=["iso3", "indicator_code"], keep="first")
+    g = grid.set_index(["iso3", "indicator_code"])
+    r = raw.set_index(["iso3", "indicator_code"])
+    # Align columns: update grid with non-null values from public/real extracts
+    for col in r.columns:
+        if col not in g.columns:
+            g[col] = pd.NA
+    g.update(r)
+    # Force-copy availability/source even when score is null (explicit N/A from a public report)
+    for col in ("data_availability", "source", "source_url", "assessment_year", "missing_data_flag"):
+        if col in r.columns:
+            overlap = r.index.intersection(g.index)
+            g.loc[overlap, col] = r.loc[overlap, col]
+    out = g.reset_index()
+    n_scored = int(out["score"].notna().sum())
+    n_countries = int(out.loc[out["score"].notna(), "iso3"].nunique())
+    print(f"Legal overlay from {source_path.name}: {n_scored} scored cells across {n_countries} countries; rest N/A.")
+    return out
 
 
 def build_all() -> pd.DataFrame:
@@ -62,13 +115,15 @@ def build_all() -> pd.DataFrame:
     _ensure_dirs()
     iso3_list = sorted(ISO3_TO_NAME.keys())
 
-    # --- Disease Exposure (mock module) ---
-    disease = generate_disease_exposure(iso3_list)
+    # --- Disease Exposure (RMT provisional) ---
+    disease, disease_indicators = generate_disease_exposure(iso3_list)
     disease.to_parquet(PROCESSED_DIR / "disease_exposure.parquet", index=False)
+    disease_indicators.to_parquet(PROCESSED_DIR / "disease_indicators.parquet", index=False)
 
     # --- Economic Sensitivity (mock module) ---
-    economic = generate_economic_sensitivity(iso3_list)
+    economic, economic_indicators = generate_economic_sensitivity(iso3_list)
     economic.to_parquet(PROCESSED_DIR / "economic_sensitivity.parquet", index=False)
+    economic_indicators.to_parquet(PROCESSED_DIR / "economic_indicators.parquet", index=False)
 
     # --- Legal Preparedness ---
     raw_pvs = _load_or_generate_pvs(iso3_list)
@@ -85,10 +140,14 @@ def build_all() -> pd.DataFrame:
     meta = {
         "n_countries": len(tvi),
         "n_with_tvi": int(tvi["tvi"].notna().sum()),
-        "disease_module": "MOCK",
+        "n_with_disease": int(tvi["disease_exposure"].notna().sum()),
+        "n_with_legal": int(tvi["legal_preparedness"].notna().sum()),
+        "disease_module": "RMT_PROVISIONAL",
         "economic_module": "MOCK",
-        "legal_module": "PLACEHOLDER",
-        "pvs_source": "placeholder" if not (RAW_DIR / "pvs_indicators.csv").exists() else "user_file",
+        "legal_module": "PUBLIC_REPORTS_OR_NA",
+        "rmt_source": "data/raw/rmt" if (RAW_DIR / "rmt" / "rmt_disease_status.csv").exists() else "none",
+        "pvs_source": "public_pvsis" if (RAW_DIR / "pvs_indicators.csv").exists() else "none",
+        "missing_label": "N/A",
     }
     (PROCESSED_DIR / "build_meta.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
     print(f"Built TVI for {meta['n_with_tvi']} / {meta['n_countries']} countries.")
@@ -100,11 +159,29 @@ def load_processed() -> dict[str, pd.DataFrame]:
     required = {
         "tvi": PROCESSED_DIR / "tvi.parquet",
         "disease": PROCESSED_DIR / "disease_exposure.parquet",
+        "disease_indicators": PROCESSED_DIR / "disease_indicators.parquet",
         "economic": PROCESSED_DIR / "economic_sensitivity.parquet",
+        "economic_indicators": PROCESSED_DIR / "economic_indicators.parquet",
         "legal": PROCESSED_DIR / "legal_preparedness.parquet",
         "legal_indicators": PROCESSED_DIR / "legal_indicators.parquet",
     }
     missing = [k for k, p in required.items() if not p.exists()]
+    # Rebuild when disease module schema is outdated (pre-RMT caches)
+    disease_path = required["disease"]
+    if disease_path.exists() and "disease_indicators" not in missing:
+        try:
+            cols = set(pd.read_parquet(disease_path, columns=None).columns)
+            if "disease_status_raw" not in cols or not required["disease_indicators"].exists():
+                missing.append("disease_schema")
+        except Exception:
+            missing.append("disease_schema")
+    econ_path = required["economic"]
+    if econ_path.exists() and "economic_indicators" not in missing:
+        try:
+            if not required["economic_indicators"].exists():
+                missing.append("economic_schema")
+        except Exception:
+            missing.append("economic_schema")
     if missing:
         print(f"Missing caches {missing} — running build_all()…")
         build_all()

@@ -1,0 +1,7 @@
+pathway,pathway_key,FMD,PPR,LSD,RVF,SPGP,source
+airborne,airborne,2,0,0,0,0,EuFMD-Nexus pathwaysConfig / RMT pathway effectiveness
+vector-borne,vectorborne,0,0,3,3,1,EuFMD-Nexus pathwaysConfig / RMT pathway effectiveness
+wild animals,wildAnimals,1,2,0,1,0,EuFMD-Nexus pathwaysConfig / RMT pathway effectiveness
+animal product,animalProduct,2,0,1,2,1,EuFMD-Nexus pathwaysConfig / RMT pathway effectiveness
+live animal,liveAnimal,3,3,3,3,3,EuFMD-Nexus pathwaysConfig / RMT pathway effectiveness
+fomite,fomite,2,2,1,0,2,EuFMD-Nexus pathwaysConfig / RMT pathway effectiveness

@@ -1,0 +1,657 @@
+[
+  {
+    "iso3": "AFG",
+    "doc_id": 25,
+    "status": "ok",
+    "n_found": 3,
+    "scores": {
+      "IV-4": 2.0,
+      "IV-6": 1.0,
+      "IV-7": 1.0
+    },
+    "title": "OIE PVS EVALUATION FOLLOW-UP REPORT OF THE VETERINARY SERVICES OF THE ISLAMIC REPUBLIC OF AFGHANISTAN",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/25"
+  },
+  {
+    "iso3": "ARE",
+    "doc_id": 603,
+    "status": "ok",
+    "n_found": 5,
+    "scores": {
+      "IV-1A": 3.0,
+      "IV-1B": 3.0,
+      "IV-4": 3.0,
+      "IV-6": null,
+      "IV-7": 2.0
+    },
+    "title": "PVS FOLLOW-UP EVALUATION   REPORT OF THE  VETERINARY SERVICES OF  The United Arab Emirates ",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/603"
+  },
+  {
+    "iso3": "ARG",
+    "doc_id": 65,
+    "status": "no_scores",
+    "n_found": 0,
+    "scores": {},
+    "title": "Informe de Evaluaci\u00f3n PVS",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/65"
+  },
+  {
+    "iso3": "AUS",
+    "doc_id": 772,
+    "status": "no_scores",
+    "n_found": 0,
+    "scores": {},
+    "title": "Self Assessment Annual Report, 2025",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/772"
+  },
+  {
+    "iso3": "BEN",
+    "doc_id": 38,
+    "status": "no_scores",
+    "n_found": 0,
+    "scores": {},
+    "title": "RAPPORT DE LA MISSION DE SUIVI DE L\u2019\u00c9VALUATION PVS DES SERVICES V\u00c9T\u00c9RINAIRES DU BENIN",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/38"
+  },
+  {
+    "iso3": "BLR",
+    "doc_id": 140,
+    "status": "ok",
+    "n_found": 3,
+    "scores": {
+      "IV-4": 4.0,
+      "IV-6": 3.0,
+      "IV-7": 3.0
+    },
+    "title": "PVS Evaluation mission report",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/140"
+  },
+  {
+    "iso3": "BLZ",
+    "doc_id": 113,
+    "status": "ok",
+    "n_found": 3,
+    "scores": {
+      "IV-4": 3.0,
+      "IV-6": 2.0,
+      "IV-7": 2.0
+    },
+    "title": "OIE PVS Evaluation mission",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/113"
+  },
+  {
+    "iso3": "BOL",
+    "doc_id": 40,
+    "status": "no_scores",
+    "n_found": 0,
+    "scores": {},
+    "title": "Misi\u00f3n de Evaluaci\u00f3n PVS de Seguimiento",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/40"
+  },
+  {
+    "iso3": "BRA",
+    "doc_id": 755,
+    "status": "no_scores",
+    "n_found": 0,
+    "scores": {},
+    "title": "Self Assessment Annual Report, 2025",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/755"
+  },
+  {
+    "iso3": "BWA",
+    "doc_id": 12,
+    "status": "ok",
+    "n_found": 4,
+    "scores": {
+      "IV-1A": 4.0,
+      "IV-4": 4.0,
+      "IV-6": 5.0,
+      "IV-7": 2.0
+    },
+    "title": "OIE PVS EVALUATION FOLLOW-UP MISSION REPORT OF THE VETERINARY SERVICES OF BOTSWANA",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/12"
+  },
+  {
+    "iso3": "CHL",
+    "doc_id": 777,
+    "status": "no_scores",
+    "n_found": 0,
+    "scores": {},
+    "title": "Self Assessment Annual Report, 2025",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/777"
+  },
+  {
+    "iso3": "CIV",
+    "doc_id": 58,
+    "status": "no_scores",
+    "n_found": 0,
+    "scores": {},
+    "title": "Rapport d\u2019Evaluation PVS: Aquatique",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/58"
+  },
+  {
+    "iso3": "COG",
+    "doc_id": 139,
+    "status": "ok",
+    "n_found": 2,
+    "scores": {
+      "IV-1A": 2.0,
+      "IV-1B": 2.0
+    },
+    "title": "Rapport de mission d\u2019\u00e9valuation PVS",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/139"
+  },
+  {
+    "iso3": "COL",
+    "doc_id": 232,
+    "status": "no_scores",
+    "n_found": 0,
+    "scores": {},
+    "title": "Informe de Evaluaci\u00f3n PVS: Acu\u00e1ticos ",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/232"
+  },
+  {
+    "iso3": "CRI",
+    "doc_id": 50,
+    "status": "no_scores",
+    "n_found": 0,
+    "scores": {},
+    "title": "INFORME DE  EVALUACI\u00d3N PVS  DE SEGUIMIENTO  DE LOS SERVICIOS VETERINARIOS DE COSTA RICA",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/50"
+  },
+  {
+    "iso3": "DMA",
+    "doc_id": 189,
+    "status": "no_scores",
+    "n_found": 0,
+    "scores": {},
+    "title": "Herramienta para la Evaluaci\u00f3n de las  Prestaciones de los Servicios Veterinarios ",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/189"
+  },
+  {
+    "iso3": "ETH",
+    "doc_id": 740,
+    "status": "ok",
+    "n_found": 5,
+    "scores": {
+      "IV-1A": 3.0,
+      "IV-1B": 2.0,
+      "IV-4": 3.0,
+      "IV-6": null,
+      "IV-7": 2.0
+    },
+    "title": "WOAH PVS Evaluation Follow-Up  mission report of Ethiopia",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/740"
+  },
+  {
+    "iso3": "GIN",
+    "doc_id": 109,
+    "status": "ok",
+    "n_found": 2,
+    "scores": {
+      "IV-1A": 4.0,
+      "IV-1B": 1.0
+    },
+    "title": "Rapport de mission d\u2019\u00e9valuation PVS de suivi",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/109"
+  },
+  {
+    "iso3": "GNB",
+    "doc_id": 75,
+    "status": "no_scores",
+    "n_found": 0,
+    "scores": {},
+    "title": "Rapport de mission d\u2019\u00e9valuation PVS de suivi",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/75"
+  },
+  {
+    "iso3": "HTI",
+    "doc_id": 231,
+    "status": "no_scores",
+    "n_found": 0,
+    "scores": {},
+    "title": "Outil pour l\u2019\u00e9valuation des performances des Services V\u00e9t\u00e9rinaires",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/231"
+  },
+  {
+    "iso3": "IND",
+    "doc_id": 93,
+    "status": "ok",
+    "n_found": 3,
+    "scores": {
+      "IV-4": 3.0,
+      "IV-6": 4.0,
+      "IV-7": 5.0
+    },
+    "title": "OIE PVS Evaluation Mission Report",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/93"
+  },
+  {
+    "iso3": "IRN",
+    "doc_id": 774,
+    "status": "no_scores",
+    "n_found": 0,
+    "scores": {},
+    "title": "Self Assessment Annual Report, 2025",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/774"
+  },
+  {
+    "iso3": "ISL",
+    "doc_id": 49,
+    "status": "ok",
+    "n_found": 2,
+    "scores": {
+      "IV-4": 5.0,
+      "IV-6": 3.0
+    },
+    "title": "PVS Evaluation Report ",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/49"
+  },
+  {
+    "iso3": "ISR",
+    "doc_id": 21,
+    "status": "ok",
+    "n_found": 3,
+    "scores": {
+      "IV-4": 4.0,
+      "IV-6": 1.0,
+      "IV-7": 1.0
+    },
+    "title": "OIE PVS EVALUATION REPORT OF THE VETERINARY SERVICES OF ISRAEL",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/21"
+  },
+  {
+    "iso3": "JPN",
+    "doc_id": 765,
+    "status": "no_scores",
+    "n_found": 0,
+    "scores": {},
+    "title": "Self Assessment Annual Report, 2025",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/765"
+  },
+  {
+    "iso3": "KEN",
+    "doc_id": 214,
+    "status": "no_scores",
+    "n_found": 0,
+    "scores": {},
+    "title": "PVS Follow-up Evaluation Report",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/214"
+  },
+  {
+    "iso3": "KGZ",
+    "doc_id": 57,
+    "status": "ok",
+    "n_found": 3,
+    "scores": {
+      "IV-4": 3.0,
+      "IV-6": 1.0,
+      "IV-7": 1.0
+    },
+    "title": "OIE PVS Evaluation Follow-Up Mission Report",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/57"
+  },
+  {
+    "iso3": "MDA",
+    "doc_id": 571,
+    "status": "ok",
+    "n_found": 5,
+    "scores": {
+      "IV-1A": 5.0,
+      "IV-1B": 3.0,
+      "IV-4": 5.0,
+      "IV-6": 5.0,
+      "IV-7": 2.0
+    },
+    "title": "PVS EVALUATION   REPORT OF THE  VETERINARY SERVICES OF Republic of Moldova",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/571"
+  },
+  {
+    "iso3": "MLI",
+    "doc_id": 87,
+    "status": "no_scores",
+    "n_found": 0,
+    "scores": {},
+    "title": "RAPPORT DE MISSION D\u2019\u00c9VALUATION PVS DE SUIVI   DES SERVICES V\u00c9T\u00c9RINAIRES DU MALI",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/87"
+  },
+  {
+    "iso3": "MRT",
+    "doc_id": 578,
+    "status": "ok",
+    "n_found": 2,
+    "scores": {
+      "IV-1A": 3.0,
+      "IV-1B": 2.0
+    },
+    "title": "RAPPORT DE MISSION  D\u2019\u00c9VALUATION PVS DE SUIVI DES SERVICES V\u00c9T\u00c9RINAIRES DE  La R\u00e9publique Islamique de Mauritanie",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/578"
+  },
+  {
+    "iso3": "MWI",
+    "doc_id": 698,
+    "status": "ok",
+    "n_found": 5,
+    "scores": {
+      "IV-1A": 2.0,
+      "IV-1B": 2.0,
+      "IV-4": 2.0,
+      "IV-6": null,
+      "IV-7": null
+    },
+    "title": "WOAH_PVS_FU_Evaluation_Malawi_FinalReport+RabiesAnnex",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/698"
+  },
+  {
+    "iso3": "NAM",
+    "doc_id": 171,
+    "status": "no_scores",
+    "n_found": 0,
+    "scores": {},
+    "title": "Tool for the evaluation of Performance of Veterinary OIE PVS Tool Services",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/171"
+  },
+  {
+    "iso3": "NER",
+    "doc_id": 103,
+    "status": "ok",
+    "n_found": 2,
+    "scores": {
+      "IV-1A": 2.0,
+      "IV-1B": 1.0
+    },
+    "title": "Rapport de mission d\u2019\u00e9valuation PVS de suivi ",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/103"
+  },
+  {
+    "iso3": "NGA",
+    "doc_id": 98,
+    "status": "ok",
+    "n_found": 5,
+    "scores": {
+      "IV-1A": 3.0,
+      "IV-1B": 2.0,
+      "IV-4": 3.0,
+      "IV-6": null,
+      "IV-7": null
+    },
+    "title": "OIE PVS Evaluation Follow-Up Mission Report",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/98"
+  },
+  {
+    "iso3": "PAN",
+    "doc_id": 201,
+    "status": "no_scores",
+    "n_found": 0,
+    "scores": {},
+    "title": "Instrumento para la Evaluaci\u00f3n de las Prestaciones de los Servicios Veterinarios",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/201"
+  },
+  {
+    "iso3": "PRY",
+    "doc_id": 188,
+    "status": "no_scores",
+    "n_found": 0,
+    "scores": {},
+    "title": "Herramienta para la Evaluaci\u00f3n de las  Prestaciones de los Servicios Veterinarios ",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/188"
+  },
+  {
+    "iso3": "RWA",
+    "doc_id": 51,
+    "status": "ok",
+    "n_found": 5,
+    "scores": {
+      "IV-1A": 3.0,
+      "IV-1B": 2.0,
+      "IV-4": 3.0,
+      "IV-6": 2.0,
+      "IV-7": null
+    },
+    "title": "OIE PVS Evaluation Follow-Up Mission Report",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/51"
+  },
+  {
+    "iso3": "SDN",
+    "doc_id": 31,
+    "status": "ok",
+    "n_found": 3,
+    "scores": {
+      "IV-4": 3.0,
+      "IV-6": 2.0,
+      "IV-7": 1.0
+    },
+    "title": "OIE PVS Evaluation mission",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/31"
+  },
+  {
+    "iso3": "SLB",
+    "doc_id": 546,
+    "status": "ok",
+    "n_found": 5,
+    "scores": {
+      "IV-1A": 2.0,
+      "IV-1B": 2.0,
+      "IV-4": 2.0,
+      "IV-6": null,
+      "IV-7": null
+    },
+    "title": "PVS EVALUATION REPORT OF THE VETERINARY SERVICES OF SOLOMON ISLANDS",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/546"
+  },
+  {
+    "iso3": "SOM",
+    "doc_id": 547,
+    "status": "ok",
+    "n_found": 5,
+    "scores": {
+      "IV-1A": 2.0,
+      "IV-1B": 2.0,
+      "IV-4": 3.0,
+      "IV-6": null,
+      "IV-7": null
+    },
+    "title": "PVS EVALUATION PROVISIONAL REPORT OF THE VETERINARY SERVICES OF THE FEDERAL REPUBLIC OF SOMALIA",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/547"
+  },
+  {
+    "iso3": "SSD",
+    "doc_id": 749,
+    "status": "ok",
+    "n_found": 5,
+    "scores": {
+      "IV-1A": 2.0,
+      "IV-1B": 1.0,
+      "IV-4": 2.0,
+      "IV-6": null,
+      "IV-7": null
+    },
+    "title": "PVS_Evaluation_SouthSudan_PreparatoryPhase_ProvisionalReport",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/749"
+  },
+  {
+    "iso3": "SWZ",
+    "doc_id": 45,
+    "status": "ok",
+    "n_found": 3,
+    "scores": {
+      "IV-4": 3.0,
+      "IV-6": 4.0,
+      "IV-7": 2.0
+    },
+    "title": "OIE PVS Evaluation Follow-Up Mission Report",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/45"
+  },
+  {
+    "iso3": "SYC",
+    "doc_id": 770,
+    "status": "no_scores",
+    "n_found": 0,
+    "scores": {},
+    "title": "Self Assessment Annual Report, 2025",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/770"
+  },
+  {
+    "iso3": "SYR",
+    "doc_id": 17,
+    "status": "no_scores",
+    "n_found": 0,
+    "scores": {},
+    "title": "EVALUATION OF VETERINARY SERVICES IN SYRIA",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/17"
+  },
+  {
+    "iso3": "TCD",
+    "doc_id": 99,
+    "status": "ok",
+    "n_found": 2,
+    "scores": {
+      "IV-1A": 2.0,
+      "IV-1B": 1.0
+    },
+    "title": "Rapport de mission d\u2019\u00e9valuation PVS de suivi",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/99"
+  },
+  {
+    "iso3": "TGO",
+    "doc_id": 100,
+    "status": "ok",
+    "n_found": 1,
+    "scores": {
+      "IV-1A": 2.0
+    },
+    "title": "Rapport de mission d\u2019\u00e9valuation PVS de suivi",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/100"
+  },
+  {
+    "iso3": "TJK",
+    "doc_id": 86,
+    "status": "ok",
+    "n_found": 3,
+    "scores": {
+      "IV-4": 4.0,
+      "IV-6": 2.0,
+      "IV-7": 1.0
+    },
+    "title": "OIE PVS Evaluation Follow-Up Mission Report ",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/86"
+  },
+  {
+    "iso3": "TLS",
+    "doc_id": 368,
+    "status": "ok",
+    "n_found": 3,
+    "scores": {
+      "IV-4": 1.0,
+      "IV-6": 1.0,
+      "IV-7": 1.0
+    },
+    "title": "Tool for the evaluation  of Performance of Veterinary Services",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/368"
+  },
+  {
+    "iso3": "TON",
+    "doc_id": 579,
+    "status": "ok",
+    "n_found": 5,
+    "scores": {
+      "IV-1A": 3.0,
+      "IV-1B": 2.0,
+      "IV-4": 3.0,
+      "IV-6": 1.0,
+      "IV-7": 1.0
+    },
+    "title": "PVS EVALUATION REPORT OF THE VETERINARY SERVICES OF KINGDOM OF TONGA",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/579"
+  },
+  {
+    "iso3": "TUR",
+    "doc_id": 141,
+    "status": "ok",
+    "n_found": 3,
+    "scores": {
+      "IV-4": 2.0,
+      "IV-6": 2.0,
+      "IV-7": 1.0
+    },
+    "title": "OIE PVS EVALUATION FOLLOW-UP REPORT OF THE VETERINARY SERVICES OF TURKEY",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/141"
+  },
+  {
+    "iso3": "TWN",
+    "doc_id": 101,
+    "status": "ok",
+    "n_found": 5,
+    "scores": {
+      "IV-1A": 4.0,
+      "IV-1B": 4.0,
+      "IV-4": 4.0,
+      "IV-6": 5.0,
+      "IV-7": null
+    },
+    "title": "PVS Evaluation mission report",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/101"
+  },
+  {
+    "iso3": "TZA",
+    "doc_id": 91,
+    "status": "ok",
+    "n_found": 3,
+    "scores": {
+      "IV-4": 4.0,
+      "IV-6": 2.0,
+      "IV-7": 2.0
+    },
+    "title": "PVS Evaluation Follow-Up Mission Report",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/91"
+  },
+  {
+    "iso3": "URY",
+    "doc_id": 78,
+    "status": "no_scores",
+    "n_found": 0,
+    "scores": {},
+    "title": "Misi\u00f3n de Evaluaci\u00f3n PVS de Seguimiento",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/78"
+  },
+  {
+    "iso3": "VNM",
+    "doc_id": 226,
+    "status": "ok",
+    "n_found": 1,
+    "scores": {
+      "IV-4": 2.0
+    },
+    "title": "Tool for the evaluation of Performance of Veterinary Services",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/226"
+  },
+  {
+    "iso3": "ZAF",
+    "doc_id": 11,
+    "status": "ok",
+    "n_found": 3,
+    "scores": {
+      "IV-4": 4.0,
+      "IV-6": 5.0,
+      "IV-7": 4.0
+    },
+    "title": "OIE PVS EVALUATION REPORT OF THE VETERINARY SERVICES OF THE REPUBLIC OF SOUTH AFRICA",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/11"
+  },
+  {
+    "iso3": "ZMB",
+    "doc_id": 699,
+    "status": "ok",
+    "n_found": 5,
+    "scores": {
+      "IV-1A": 4.0,
+      "IV-1B": 3.0,
+      "IV-4": 3.0,
+      "IV-6": 4.0,
+      "IV-7": 2.0
+    },
+    "title": "PVS EVALUATION FOLLOW-UP REPORT OF THE VETERINARY SERVICES OF  ZAMBIA WITH PPR",
+    "source_url": "https://pvs.woah.org/pvs-is-be/api/document-management/download-public/699"
+  }
+]

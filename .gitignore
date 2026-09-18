@@ -10,4 +10,5 @@ venv/
 .shiny/
 .rsconnect/
 data/raw/pvs_indicators_placeholder.*
+data/raw/pvsis_public/pdfs/
 !data/processed/

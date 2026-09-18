@@ -1,0 +1,21 @@
+rmt_region,country,mitigation_fmd,mitigation_ppr,mitigation_lsd,mitigation_rvf,mitigation_sgp,iso3,source,source_year
+North Africa,Mauritania,1.0,,,,,MRT,EuFMD RMT_FAST curated mitigation measures (rv20231017),2023
+North Africa,Morocco,4.0,,,,,MAR,EuFMD RMT_FAST curated mitigation measures (rv20231017),2023
+North Africa,Tunisia,2.0,,,,,TUN,EuFMD RMT_FAST curated mitigation measures (rv20231017),2023
+North Africa,Algeria,4.0,,,,,DZA,EuFMD RMT_FAST curated mitigation measures (rv20231017),2023
+North Africa,Mali,,,,,,MLI,EuFMD RMT_FAST curated mitigation measures (rv20231017),2023
+SEEN,Afghanistan,1.0,1.0,1.0,1.0,1.0,AFG,EuFMD RMT_FAST curated mitigation measures (rv20231017),2023
+SEEN,Pakistan,2.0,2.0,2.0,1.0,1.0,PAK,EuFMD RMT_FAST curated mitigation measures (rv20231017),2023
+SEEN,Iraq,1.0,1.0,1.0,1.0,1.0,IRQ,EuFMD RMT_FAST curated mitigation measures (rv20231017),2023
+SEEN,Turkey,3.0,3.0,3.0,1.0,3.0,TUR,EuFMD RMT_FAST curated mitigation measures (rv20231017),2023
+SEEN,Georgia,3.0,3.0,2.0,1.0,2.0,GEO,EuFMD RMT_FAST curated mitigation measures (rv20231017),2023
+SEEN,Armenia,2.0,3.0,2.0,1.0,2.0,ARM,EuFMD RMT_FAST curated mitigation measures (rv20231017),2023
+SEEN,Azerbaijan,3.0,3.0,2.0,1.0,3.0,AZE,EuFMD RMT_FAST curated mitigation measures (rv20231017),2023
+SEEN,Iran,2.0,3.0,2.0,1.0,3.0,IRN,EuFMD RMT_FAST curated mitigation measures (rv20231017),2023
+Middle East,Syria,1.0,1.0,1.0,0.0,,SYR,EuFMD RMT_FAST curated mitigation measures (rv20231017),2023
+Middle East,Palestine,2.0,3.0,2.0,1.0,,PSE,EuFMD RMT_FAST curated mitigation measures (rv20231017),2023
+Middle East,Sudan,1.0,1.0,1.0,2.0,,SDN,EuFMD RMT_FAST curated mitigation measures (rv20231017),2023
+Middle East,Libya,3.0,1.0,1.0,2.0,,LBY,EuFMD RMT_FAST curated mitigation measures (rv20231017),2023
+Middle East,Egypt,2.0,3.0,2.0,3.0,,EGY,EuFMD RMT_FAST curated mitigation measures (rv20231017),2023
+Middle East,Lebanon,1.0,1.0,2.0,0.0,,LBN,EuFMD RMT_FAST curated mitigation measures (rv20231017),2023
+Middle East,Jordan,2.0,2.0,3.0,1.0,,JOR,EuFMD RMT_FAST curated mitigation measures (rv20231017),2023

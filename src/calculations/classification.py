@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-from config.settings import CLASSIFICATION_THRESHOLDS, PREPAREDNESS_LABELS
+from config.settings import CLASSIFICATION_THRESHOLDS, PREPAREDNESS_LABELS, MISSING_DATA
 
 
 def classify_score(score: float | None, *, preparedness: bool = False) -> str:
     """Map a 0–100 score to a qualitative label using configured thresholds."""
     if score is None or (isinstance(score, float) and score != score):  # NaN
-        return "Data unavailable"
+        return MISSING_DATA["missing_label"]
     for band in CLASSIFICATION_THRESHOLDS:
         if score <= band["max"]:
             label = band["label"]

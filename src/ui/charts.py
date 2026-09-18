@@ -2,12 +2,42 @@
 
 from __future__ import annotations
 
+import math
+
+import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 
-from config.settings import BRAND, TVI_COLORSCALE
+from config.settings import BRAND, TVI_COLORSCALE, MISSING_DATA
 from src.calculations.benchmarks import METRIC_LABELS
+
+
+def _json_safe(value):
+    """Convert NaN/Inf to JSON-safe values for shinywidgets/plotly."""
+    if value is None:
+        return None
+    if isinstance(value, (float, np.floating)):
+        if math.isnan(float(value)) or math.isinf(float(value)):
+            return None
+        return float(value)
+    if isinstance(value, (np.integer,)):
+        return int(value)
+    try:
+        if pd.isna(value):
+            return None
+    except (TypeError, ValueError):
+        pass
+    return value
+
+
+def _fmt_hover(value, digits: int = 1) -> str:
+    v = _json_safe(value)
+    if v is None:
+        return MISSING_DATA["missing_label"]
+    if isinstance(v, (int, float)):
+        return f"{v:.{digits}f}"
+    return str(v)
 
 
 def _base_layout(fig: go.Figure, height: int = 360) -> go.Figure:
@@ -26,22 +56,34 @@ def choropleth_tvi(tvi_df: pd.DataFrame, selected_iso3: str | None = None) -> go
     df = tvi_df.copy()
     hover = (
         "<b>%{customdata[0]}</b><br>"
-        "TVI: %{z:.1f}<br>"
-        "Disease Exposure: %{customdata[1]}<br>"
-        "Economic Sensitivity: %{customdata[2]}<br>"
-        "Legal Preparedness: %{customdata[3]}<br>"
-        "Data: %{customdata[4]}"
+        "TVI: %{customdata[1]}<br>"
+        "Disease Exposure: %{customdata[2]}<br>"
+        "Economic Sensitivity: %{customdata[3]}<br>"
+        "Legal Preparedness: %{customdata[4]}<br>"
+        "Data: %{customdata[5]}"
         "<extra></extra>"
     )
-    custom = df[
-        ["country", "disease_exposure", "economic_sensitivity", "legal_preparedness", "data_availability"]
-    ].values
+    # All customdata must be JSON-safe (no NaN) for shinywidgets
+    custom = [
+        [
+            str(r.country),
+            _fmt_hover(r.tvi, 1),
+            _fmt_hover(r.disease_exposure, 1),
+            _fmt_hover(r.economic_sensitivity, 1),
+            _fmt_hover(r.legal_preparedness, 1),
+            str(r.data_availability)
+            if pd.notna(r.data_availability)
+            else MISSING_DATA["missing_label"],
+        ]
+        for r in df.itertuples(index=False)
+    ]
+    z_plot = [_json_safe(v) for v in df["tvi"].tolist()]
 
     fig = go.Figure(
         go.Choropleth(
-            locations=df["iso3"],
-            z=df["tvi"],
-            text=df["country"],
+            locations=df["iso3"].astype(str).tolist(),
+            z=z_plot,
+            text=df["country"].astype(str).tolist(),
             customdata=custom,
             colorscale=TVI_COLORSCALE,
             zmin=0,
@@ -55,7 +97,6 @@ def choropleth_tvi(tvi_df: pd.DataFrame, selected_iso3: str | None = None) -> go
                 bgcolor="rgba(255,255,255,0.85)",
             ),
             hovertemplate=hover,
-            selectedpoints=[],
         )
     )
     fig.update_geos(
@@ -75,7 +116,7 @@ def choropleth_tvi(tvi_df: pd.DataFrame, selected_iso3: str | None = None) -> go
     if selected_iso3:
         fig.add_trace(
             go.Choropleth(
-                locations=[selected_iso3],
+                locations=[str(selected_iso3)],
                 z=[1],
                 colorscale=[[0, "rgba(0,0,0,0)"], [1, "rgba(0,0,0,0)"]],
                 showscale=False,
@@ -91,9 +132,9 @@ def dimension_contribution_bars(row: pd.Series) -> go.Figure:
     """Horizontal bars: vulnerability contribution of each dimension."""
     labels = ["Disease Exposure", "Economic Sensitivity", "Legal (vuln. contrib.)"]
     values = [
-        float(row["contrib_disease"]) if pd.notna(row.get("contrib_disease")) else 0,
-        float(row["contrib_economic"]) if pd.notna(row.get("contrib_economic")) else 0,
-        float(row["contrib_legal"]) if pd.notna(row.get("contrib_legal")) else 0,
+        _json_safe(row.get("contrib_disease")) or 0.0,
+        _json_safe(row.get("contrib_economic")) or 0.0,
+        _json_safe(row.get("contrib_legal")) or 0.0,
     ]
     colors = [BRAND["exposure"], BRAND["economic"], BRAND["preparedness"]]
     fig = go.Figure(
@@ -120,6 +161,10 @@ def dimension_contribution_bars(row: pd.Series) -> go.Figure:
 def comparison_grouped_bars(comp_df: pd.DataFrame) -> go.Figure:
     df = comp_df.copy()
     df["metric_label"] = df["metric"].map(METRIC_LABELS)
+    df["value"] = df["value"].map(_json_safe)
+    df = df[df["value"].notna()].copy()
+    if df.empty:
+        return _base_layout(go.Figure(), height=380)
     fig = px.bar(
         df,
         x="metric_label",
@@ -144,17 +189,66 @@ def comparison_grouped_bars(comp_df: pd.DataFrame) -> go.Figure:
     return fig
 
 
-def legal_indicator_bars(ind_df: pd.DataFrame, iso3: str) -> go.Figure:
+def disease_indicator_bars(ind_df: pd.DataFrame, iso3: str) -> go.Figure:
+    """Horizontal bars for RMT disease-exposure indicators (same pattern as legal)."""
+    return _component_indicator_bars(
+        ind_df,
+        iso3,
+        order={"DS-STATUS": 0, "DS-MITIG": 1, "DS-PATH": 2},
+        empty_title=f"No disease indicator rows for {iso3}",
+        color_high=BRAND["exposure"],
+        color_low=BRAND["steel"],
+        y_margin_l=90,
+    )
+
+
+def economic_indicator_bars(ind_df: pd.DataFrame, iso3: str) -> go.Figure:
+    """Horizontal bars for economic sensitivity indicators."""
+    return _component_indicator_bars(
+        ind_df,
+        iso3,
+        order={"EC-LIV": 0, "EC-EXP": 1, "EC-IMP": 2, "EC-CON": 3},
+        empty_title=f"No economic indicator rows for {iso3}",
+        color_high=BRAND["economic"],
+        color_low=BRAND["steel"],
+        y_margin_l=90,
+    )
+
+
+def _component_indicator_bars(
+    ind_df: pd.DataFrame,
+    iso3: str,
+    *,
+    order: dict[str, int],
+    empty_title: str,
+    color_high: str,
+    color_low: str,
+    y_margin_l: int = 70,
+) -> go.Figure:
     sub = ind_df[ind_df["iso3"] == iso3].copy()
-    sub = sub.sort_values("indicator_code")
-    y = [f"{r.indicator_code}" for _, r in sub.iterrows()]
-    x = [None if pd.isna(v) else float(v) for v in sub["score_100"]]
+    if sub.empty:
+        fig = go.Figure()
+        fig.update_layout(
+            title=empty_title,
+            height=280,
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+        )
+        return fig
+    sub["_ord"] = sub["indicator_code"].map(lambda c: order.get(c, 9))
+    sub = sub.sort_values("_ord")
+    y = [str(r.indicator_code) for _, r in sub.iterrows()]
+    x = [_json_safe(v) for v in sub["score_100"]]
     colors = [
-        BRAND["line"] if v is None else (BRAND["preparedness"] if v >= 50 else BRAND["contribute"])
+        BRAND["line"] if v is None else (color_high if v >= 50 else color_low)
         for v in x
     ]
-    display_x = [0 if v is None else v for v in x]
-    texts = ["Data unavailable" if v is None else f"{v:.0f}" for v in x]
+    display_x = [0.0 if v is None else float(v) for v in x]
+    texts = [MISSING_DATA["missing_label"] if v is None else f"{v:.0f}" for v in x]
+    names = []
+    for code, v in zip(y, sub["indicator_name"].tolist()):
+        safe = _json_safe(v)
+        names.append(str(safe) if safe is not None else code)
 
     fig = go.Figure(
         go.Bar(
@@ -164,7 +258,54 @@ def legal_indicator_bars(ind_df: pd.DataFrame, iso3: str) -> go.Figure:
             marker_color=colors,
             text=texts,
             textposition="outside",
-            customdata=sub["indicator_name"],
+            customdata=names,
+            hovertemplate="<b>%{y}</b><br>%{customdata}<br>Score: %{text}<extra></extra>",
+        )
+    )
+    fig = _base_layout(fig, height=280)
+    fig.update_layout(
+        xaxis=dict(title="Normalised score (0–100)", range=[0, 115]),
+        yaxis=dict(autorange="reversed"),
+        showlegend=False,
+        margin=dict(l=y_margin_l, r=80, t=20, b=40),
+    )
+    return fig
+
+
+def legal_indicator_bars(ind_df: pd.DataFrame, iso3: str) -> go.Figure:
+    sub = ind_df[ind_df["iso3"] == iso3].copy()
+    if sub.empty:
+        fig = go.Figure()
+        fig.update_layout(
+            title=f"No indicator rows for {iso3}",
+            height=280,
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+        )
+        return fig
+    sub = sub.sort_values("indicator_code")
+    y = [str(r.indicator_code) for _, r in sub.iterrows()]
+    x = [_json_safe(v) for v in sub["score_100"]]
+    colors = [
+        BRAND["line"] if v is None else (BRAND["preparedness"] if v >= 50 else BRAND["contribute"])
+        for v in x
+    ]
+    display_x = [0.0 if v is None else float(v) for v in x]
+    texts = [MISSING_DATA["missing_label"] if v is None else f"{v:.0f}" for v in x]
+    names = []
+    for code, v in zip(y, sub["indicator_name"].tolist()):
+        safe = _json_safe(v)
+        names.append(str(safe) if safe is not None else code)
+
+    fig = go.Figure(
+        go.Bar(
+            x=display_x,
+            y=y,
+            orientation="h",
+            marker_color=colors,
+            text=texts,
+            textposition="outside",
+            customdata=names,
             hovertemplate="<b>%{y}</b><br>%{customdata}<br>Score: %{text}<extra></extra>",
         )
     )
@@ -179,7 +320,15 @@ def legal_indicator_bars(ind_df: pd.DataFrame, iso3: str) -> go.Figure:
 
 
 def ranking_table_data(tvi_df: pd.DataFrame, n: int = 15) -> pd.DataFrame:
-    cols = ["country", "iso3", "region", "tvi", "disease_exposure", "economic_sensitivity", "legal_preparedness"]
+    cols = [
+        "country",
+        "iso3",
+        "region",
+        "tvi",
+        "disease_exposure",
+        "economic_sensitivity",
+        "legal_preparedness",
+    ]
     return (
         tvi_df[cols]
         .dropna(subset=["tvi"])

@@ -31,7 +31,6 @@ from config.settings import (
     DIMENSION_WEIGHTS,
     DISEASE_LABELS,
     LEGAL_COMPONENT_WEIGHTS,
-    LEGAL_INDICATOR_WEIGHTS,
     LEGAL_INDICATORS,
     LEGAL_VULN_TRANSFORM,
     MISSING_DATA,
@@ -40,14 +39,21 @@ from config.woah_regions import WOAH_REGIONS
 from src.calculations.benchmarks import comparison_frame
 from src.calculations.classification import classify_css_class, classify_score
 from src.calculations.drivers import country_drivers
+from src.modules.economic_sensitivity import ECONOMIC_INDICATORS
 from src.pipeline.build_dataset import load_processed
 from src.ui.charts import (
     choropleth_tvi,
     comparison_grouped_bars,
     dimension_contribution_bars,
+    disease_indicator_bars,
+    economic_indicator_bars,
     legal_indicator_bars,
     ranking_table_data,
 )
+from src.ui.methodology_disease import disease_methodology_section
+from src.ui.methodology_economic import economic_methodology_section
+from src.ui.methodology_intro import methodology_intro_section
+from src.ui.methodology_legal import legal_methodology_section
 
 # ---------------------------------------------------------------------------
 # Pre-load processed data (fast UI; rebuild via scripts.build_data)
@@ -55,7 +61,9 @@ from src.ui.charts import (
 DATA = load_processed()
 TVI = DATA["tvi"]
 DISEASE = DATA["disease"].set_index("iso3")
+DISEASE_IND = DATA["disease_indicators"]
 ECONOMIC = DATA["economic"].set_index("iso3")
+ECONOMIC_IND = DATA["economic_indicators"]
 LEGAL = DATA["legal"].set_index("iso3")
 LEGAL_IND = DATA["legal_indicators"]
 
@@ -65,6 +73,82 @@ COUNTRY_CHOICES = {
         r.iso3: r.country
         for r in TVI.sort_values("country").itertuples()
     },
+}
+
+# Disease Exposure tab: countries with a non-null Disease Exposure score
+_ISO3_WITH_DISEASE = set(
+    DISEASE.index[DISEASE["disease_exposure"].notna()].astype(str)
+)
+_disease_rows = TVI.sort_values("country")
+_DISEASE_WITH = {
+    r.iso3: r.country
+    for r in _disease_rows.itertuples()
+    if r.iso3 in _ISO3_WITH_DISEASE
+}
+_DISEASE_WITHOUT = {
+    r.iso3: f"{r.country} (N/A)"
+    for r in _disease_rows.itertuples()
+    if r.iso3 not in _ISO3_WITH_DISEASE
+}
+DISEASE_COUNTRY_CHOICES_WITH_DATA = {
+    "": "— Select a country with disease data —",
+    **_DISEASE_WITH,
+}
+DISEASE_COUNTRY_CHOICES_ALL = {
+    "": "— Select a country —",
+    f"Disease data available ({len(_DISEASE_WITH)})": _DISEASE_WITH,
+    f"No disease data — N/A ({len(_DISEASE_WITHOUT)})": _DISEASE_WITHOUT,
+}
+
+# Economic Sensitivity tab (mock: all countries currently scored)
+_ISO3_WITH_ECONOMIC = set(
+    ECONOMIC.index[ECONOMIC["economic_sensitivity"].notna()].astype(str)
+)
+_econ_rows = TVI.sort_values("country")
+_ECONOMIC_WITH = {
+    r.iso3: r.country
+    for r in _econ_rows.itertuples()
+    if r.iso3 in _ISO3_WITH_ECONOMIC
+}
+_ECONOMIC_WITHOUT = {
+    r.iso3: f"{r.country} (N/A)"
+    for r in _econ_rows.itertuples()
+    if r.iso3 not in _ISO3_WITH_ECONOMIC
+}
+ECONOMIC_COUNTRY_CHOICES_WITH_DATA = {
+    "": "— Select a country with economic data —",
+    **_ECONOMIC_WITH,
+}
+ECONOMIC_COUNTRY_CHOICES_ALL = {
+    "": "— Select a country —",
+    f"Economic data available ({len(_ECONOMIC_WITH)})": _ECONOMIC_WITH,
+    f"No economic data — N/A ({len(_ECONOMIC_WITHOUT)})": _ECONOMIC_WITHOUT,
+}
+
+# Legal tab: countries with a non-null Legal Preparedness score
+_ISO3_WITH_LEGAL = set(
+    LEGAL.index[LEGAL["legal_preparedness"].notna()].astype(str)
+)
+_legal_rows = TVI.sort_values("country")
+_LEGAL_WITH = {
+    r.iso3: r.country
+    for r in _legal_rows.itertuples()
+    if r.iso3 in _ISO3_WITH_LEGAL
+}
+_LEGAL_WITHOUT = {
+    r.iso3: f"{r.country} (N/A)"
+    for r in _legal_rows.itertuples()
+    if r.iso3 not in _ISO3_WITH_LEGAL
+}
+# Default dropdown = only countries with data (browsers cannot reliably colour <option> text)
+LEGAL_COUNTRY_CHOICES_WITH_DATA = {
+    "": "— Select a country with legal data —",
+    **_LEGAL_WITH,
+}
+LEGAL_COUNTRY_CHOICES_ALL = {
+    "": "— Select a country —",
+    f"Legal data available ({len(_LEGAL_WITH)})": _LEGAL_WITH,
+    f"No legal data — N/A ({len(_LEGAL_WITHOUT)})": _LEGAL_WITHOUT,
 }
 
 DISEASE_CHOICES = {
@@ -145,12 +229,6 @@ app_ui = ui.page_fluid(
                             choices={"All": "All regions", **{r: r for r in WOAH_REGIONS}},
                             selected="All",
                         ),
-                        ui.input_select(
-                            "country",
-                            "Select country",
-                            choices=COUNTRY_CHOICES,
-                            selected="",
-                        ),
                     ),
                     ui.output_ui("disease_notice"),
                     ui.output_ui("global_stats"),
@@ -162,7 +240,7 @@ app_ui = ui.page_fluid(
                             tags.p(
                                 {"class": "tvi-panel-intro"},
                                 "Countries coloured by Trade Vulnerability Index (0–100). "
-                                "Hover for dimension scores; select a country above or in the Country profile tab.",
+                                "Hover for dimension scores; open Country profile to inspect a country.",
                             ),
                             output_widget("world_map", height="520px"),
                             ui.div(
@@ -222,16 +300,83 @@ app_ui = ui.page_fluid(
                         output_widget("compare_chart", height="400px"),
                     ),
                 ),
+                # ========== DISEASE EXPOSURE ==========
+                ui.nav_panel(
+                    "Disease exposure",
+                    ui.div(
+                        {"class": "tvi-controls tvi-legal-controls"},
+                        ui.input_select(
+                            "disease_country",
+                            f"Country with disease data ({len(_DISEASE_WITH)})",
+                            choices=DISEASE_COUNTRY_CHOICES_WITH_DATA,
+                            selected=next(iter(_DISEASE_WITH), ""),
+                        ),
+                        ui.input_checkbox(
+                            "disease_show_all",
+                            f"Also list countries without disease data ({len(_DISEASE_WITHOUT)} N/A)",
+                            value=False,
+                        ),
+                        ui.div(
+                            {"class": "tvi-legal-select-legend"},
+                            tags.span(
+                                {"class": "tvi-legal-hint"},
+                                "Dropdown lists countries with RMT disease-status scores by default. "
+                                "Tick the box only if you need N/A countries.",
+                            ),
+                        ),
+                    ),
+                    ui.output_ui("disease_body"),
+                ),
+                # ========== ECONOMIC SENSITIVITY ==========
+                ui.nav_panel(
+                    "Economic sensitivity",
+                    ui.div(
+                        {"class": "tvi-controls tvi-legal-controls"},
+                        ui.input_select(
+                            "economic_country",
+                            f"Country with economic data ({len(_ECONOMIC_WITH)})",
+                            choices=ECONOMIC_COUNTRY_CHOICES_WITH_DATA,
+                            selected=next(iter(_ECONOMIC_WITH), ""),
+                        ),
+                        ui.input_checkbox(
+                            "economic_show_all",
+                            f"Also list countries without economic data ({len(_ECONOMIC_WITHOUT)} N/A)",
+                            value=False,
+                        ),
+                        ui.div(
+                            {"class": "tvi-legal-select-legend"},
+                            tags.span(
+                                {"class": "tvi-legal-hint"},
+                                "Mock module — all countries currently have placeholder scores. "
+                                "Replace with FAOSTAT / Comtrade when colleagues confirm.",
+                            ),
+                        ),
+                    ),
+                    ui.output_ui("economic_body"),
+                ),
                 # ========== LEGAL DETAIL ==========
                 ui.nav_panel(
                     "Legal preparedness",
                     ui.div(
-                        {"class": "tvi-controls"},
+                        {"class": "tvi-controls tvi-legal-controls"},
                         ui.input_select(
                             "legal_country",
-                            "Country",
-                            choices=COUNTRY_CHOICES,
-                            selected="",
+                            f"Country with legal data ({len(_LEGAL_WITH)})",
+                            choices=LEGAL_COUNTRY_CHOICES_WITH_DATA,
+                            selected=next(iter(_LEGAL_WITH), ""),
+                        ),
+                        ui.input_checkbox(
+                            "legal_show_all",
+                            f"Also list countries without legal data ({len(_LEGAL_WITHOUT)} N/A)",
+                            value=False,
+                        ),
+                        ui.div(
+                            {"class": "tvi-legal-select-legend"},
+                            tags.span(
+                                {"class": "tvi-legal-hint"},
+                                "Dropdown lists countries with PVS legal scores by default "
+                                "(green selector). Tick the box only if you need N/A countries.",
+                            ),
                         ),
                     ),
                     ui.output_ui("legal_body"),
@@ -241,18 +386,7 @@ app_ui = ui.page_fluid(
                     "About / Methodology",
                     ui.div(
                         {"class": "tvi-panel tvi-prose"},
-                        tags.h2("About the Trade Vulnerability Index"),
-                        tags.p(
-                            "The Trade Vulnerability Index (TVI) is a decision-support metric that "
-                            "summarises how vulnerable a country is to the trade-related consequences "
-                            "of an animal-health shock. This prototype focuses on Foot-and-Mouth Disease (FMD)."
-                        ),
-                        tags.h3("Conceptual model"),
-                        tags.p(
-                            "TVI combines three dimensions. Disease Exposure and Economic Sensitivity "
-                            "increase vulnerability. Legal Preparedness is a resilience score: higher "
-                            "preparedness reduces vulnerability."
-                        ),
+                        methodology_intro_section(),
                         ui.div(
                             {"class": "tvi-flow"},
                             ui.div(
@@ -282,11 +416,18 @@ app_ui = ui.page_fluid(
                         ui.div(
                             {"class": "tvi-callout"},
                             HTML(
-                                "<strong>Current data status:</strong> Disease Exposure and Economic "
-                                "Sensitivity are <strong>mock modules</strong> (replaceable). Legal "
-                                "Preparedness uses a <strong>placeholder methodology</strong> with "
-                                "synthetic PVS-style scores until real assessment data and scoring "
-                                "rules are supplied. No values are silently imputed to zero."
+                                "<strong>Current data status:</strong> Disease Exposure uses "
+                                "<strong>EuFMD RMT curated disease-status and mitigation</strong> "
+                                f"for {len(_DISEASE_WITH)} neighbourhood countries, with "
+                                "<strong>provisional pathway connections</strong> "
+                                "(bilateral Comtrade/proximity not yet wired). Other countries are "
+                                f"<strong>{MISSING_DATA['missing_label']}</strong>. "
+                                "Economic Sensitivity is still a <strong>mock module</strong> "
+                                "(see Economic Sensitivity tab). "
+                                "Legal Preparedness is scored from <strong>public WOAH PVS reports</strong> "
+                                "where Levels of Advancement could be extracted; otherwise "
+                                f"<strong>{MISSING_DATA['missing_label']}</strong> "
+                                "(never imputed to zero)."
                             ),
                         ),
                         tags.h3("Weights (configurable)"),
@@ -305,35 +446,14 @@ app_ui = ui.page_fluid(
                             f"Legal vulnerability transform: {LEGAL_VULN_TRANSFORM} "
                             "(preparedness → 100 − preparedness before aggregation)."
                         ),
-                        tags.h3("Legal Preparedness construction"),
-                        tags.p("Two components, with configurable weights:"),
-                        tags.ul(
-                            tags.li(
-                                f"Domestic Legal Readiness "
-                                f"({LEGAL_COMPONENT_WEIGHTS['domestic_legal_readiness']:.0%}): "
-                                "IV-1A, IV-1B"
-                            ),
-                            tags.li(
-                                f"Trade-Continuity Preparedness "
-                                f"({LEGAL_COMPONENT_WEIGHTS['trade_continuity_preparedness']:.0%}): "
-                                "IV-4, IV-6, IV-7"
-                            ),
-                        ),
-                        tags.p("Indicator weights:"),
-                        tags.ul(
-                            *[
-                                tags.li(f"{code}: {LEGAL_INDICATORS[code]['name']} — {w:.2f}")
-                                for code, w in LEGAL_INDICATOR_WEIGHTS.items()
-                            ]
-                        ),
-                        tags.h3("PVS data sources"),
+                        tags.h2("Dimension methodology (detail)"),
                         tags.p(
-                            "Authoritative sources for future population of legal indicators include "
-                            "WOAH PVS Pathway assessment reports and the PVS Information System (PVSIS). "
-                            "There is currently no public bulk API for Critical Competency scores; "
-                            "this application ingests local CSV/Excel/JSON files placed in data/raw/ "
-                            "and does not depend on a live network call."
+                            "The sections below document each dimension’s concept note, candidate "
+                            "data sources and open questions for colleagues."
                         ),
+                        disease_methodology_section(),
+                        economic_methodology_section(),
+                        legal_methodology_section(),
                         tags.h3("Missing data"),
                         tags.p(
                             "Missing observations are flagged explicitly and displayed as "
@@ -342,8 +462,16 @@ app_ui = ui.page_fluid(
                         tags.h3("Limitations"),
                         tags.ul(
                             tags.li("Prototype for the WOAH Datathon — not an official WOAH product."),
-                            tags.li("Mock epidemiological and economic dimensions."),
-                            tags.li("Placeholder legal scores pending real methodology and data."),
+                            tags.li(
+                                "Disease Exposure is an RMT provisional adaptation: curated EuFMD "
+                                "status/mitigation for a limited country set; connections are "
+                                "provisional until bilateral trade/proximity data are added."
+                            ),
+                            tags.li("Economic Sensitivity remains a mock module."),
+                            tags.li(
+                                "Legal scores are PVS-based proxies; public coverage is incomplete; "
+                                "assessment years and PVS Tool editions differ across countries."
+                            ),
                             tags.li("Equal dimension weights are a starting point for sensitivity testing."),
                             tags.li("WOAH region membership is approximate for demonstration."),
                         ),
@@ -372,22 +500,90 @@ app_ui = ui.page_fluid(
 # Server
 # ---------------------------------------------------------------------------
 def server(input, output, session):
-    # Keep country selectors in sync
-    @reactive.effect
-    def _sync_from_global():
-        c = input.country()
-        if c:
-            ui.update_select("country_profile", selected=c)
-            ui.update_select("compare_country", selected=c)
-            ui.update_select("legal_country", selected=c)
-
+    # Keep country selectors in sync from Country profile
     @reactive.effect
     def _sync_from_profile():
         c = input.country_profile()
         if c:
-            ui.update_select("country", selected=c)
             ui.update_select("compare_country", selected=c)
-            ui.update_select("legal_country", selected=c)
+            if c in _ISO3_WITH_DISEASE or input.disease_show_all():
+                ui.update_select("disease_country", selected=c)
+            if c in _ISO3_WITH_ECONOMIC or input.economic_show_all():
+                ui.update_select("economic_country", selected=c)
+            if c in _ISO3_WITH_LEGAL or input.legal_show_all():
+                ui.update_select("legal_country", selected=c)
+
+    @reactive.effect
+    @reactive.event(input.disease_show_all, ignore_none=False)
+    def _disease_country_choices():
+        """Default: only countries with RMT disease data."""
+        show_all = bool(input.disease_show_all())
+        current = input.disease_country()
+        if show_all:
+            choices = DISEASE_COUNTRY_CHOICES_ALL
+            label = "Country"
+            selected = current if current else next(iter(_DISEASE_WITH), "")
+        else:
+            choices = DISEASE_COUNTRY_CHOICES_WITH_DATA
+            label = f"Country with disease data ({len(_DISEASE_WITH)})"
+            if current and current in _DISEASE_WITH:
+                selected = current
+            else:
+                selected = next(iter(_DISEASE_WITH), "")
+        ui.update_select(
+            "disease_country",
+            label=label,
+            choices=choices,
+            selected=selected,
+        )
+
+    @reactive.effect
+    @reactive.event(input.economic_show_all, ignore_none=False)
+    def _economic_country_choices():
+        """Default: only countries with economic data."""
+        show_all = bool(input.economic_show_all())
+        current = input.economic_country()
+        if show_all:
+            choices = ECONOMIC_COUNTRY_CHOICES_ALL
+            label = "Country"
+            selected = current if current else next(iter(_ECONOMIC_WITH), "")
+        else:
+            choices = ECONOMIC_COUNTRY_CHOICES_WITH_DATA
+            label = f"Country with economic data ({len(_ECONOMIC_WITH)})"
+            if current and current in _ECONOMIC_WITH:
+                selected = current
+            else:
+                selected = next(iter(_ECONOMIC_WITH), "")
+        ui.update_select(
+            "economic_country",
+            label=label,
+            choices=choices,
+            selected=selected,
+        )
+
+    @reactive.effect
+    @reactive.event(input.legal_show_all, ignore_none=False)
+    def _legal_country_choices():
+        """Default: only countries with legal data so users can pick them directly."""
+        show_all = bool(input.legal_show_all())
+        current = input.legal_country()
+        if show_all:
+            choices = LEGAL_COUNTRY_CHOICES_ALL
+            label = "Country"
+            selected = current if current else next(iter(_LEGAL_WITH), "")
+        else:
+            choices = LEGAL_COUNTRY_CHOICES_WITH_DATA
+            label = f"Country with legal data ({len(_LEGAL_WITH)})"
+            if current and current in _LEGAL_WITH:
+                selected = current
+            else:
+                selected = next(iter(_LEGAL_WITH), "")
+        ui.update_select(
+            "legal_country",
+            label=label,
+            choices=choices,
+            selected=selected,
+        )
 
     @reactive.calc
     def filtered_tvi() -> pd.DataFrame:
@@ -399,7 +595,13 @@ def server(input, output, session):
 
     @reactive.calc
     def active_iso3() -> str | None:
-        for key in (input.country_profile, input.country, input.compare_country, input.legal_country):
+        for key in (
+            input.country_profile,
+            input.compare_country,
+            input.disease_country,
+            input.economic_country,
+            input.legal_country,
+        ):
             v = key()
             if v:
                 return v
@@ -427,7 +629,10 @@ def server(input, output, session):
             high = f"{valid['tvi'].max():.1f}"
             n = f"{len(valid)}"
             top = valid.iloc[0]["country"]
-        coverage = (
+        coverage_d = (
+            f"{int(DISEASE['disease_exposure'].notna().sum())} / {len(DISEASE)}"
+        )
+        coverage_l = (
             f"{int(LEGAL['legal_preparedness'].notna().sum())} / {len(LEGAL)}"
         )
         return ui.div(
@@ -446,22 +651,22 @@ def server(input, output, session):
             ),
             ui.div(
                 {"class": "tvi-stat"},
-                tags.p({"class": "tvi-stat-label"}, "Highest TVI"),
-                tags.p({"class": "tvi-stat-value"}, high),
-                tags.p({"class": "tvi-stat-note"}, top),
+                tags.p({"class": "tvi-stat-label"}, "Disease coverage"),
+                tags.p({"class": "tvi-stat-value"}, coverage_d.split("/")[0].strip()),
+                tags.p({"class": "tvi-stat-note"}, f"of {coverage_d.split('/')[-1].strip()} (RMT)"),
             ),
             ui.div(
                 {"class": "tvi-stat"},
                 tags.p({"class": "tvi-stat-label"}, "Legal coverage"),
-                tags.p({"class": "tvi-stat-value"}, coverage.split("/")[0].strip()),
-                tags.p({"class": "tvi-stat-note"}, f"of {coverage.split('/')[-1].strip()} countries"),
+                tags.p({"class": "tvi-stat-value"}, coverage_l.split("/")[0].strip()),
+                tags.p({"class": "tvi-stat-note"}, f"of {coverage_l.split('/')[-1].strip()} countries"),
             ),
         )
 
     @render_widget
     def world_map():
         df = filtered_tvi()
-        return choropleth_tvi(df, selected_iso3=input.country() or None)
+        return choropleth_tvi(df, selected_iso3=input.country_profile() or None)
 
     @render.ui
     def ranking_table():
@@ -666,6 +871,420 @@ def server(input, output, session):
         return comparison_grouped_bars(comp)
 
     @render.ui
+    def disease_body():
+        iso3 = input.disease_country()
+        if not iso3:
+            return ui.div(
+                {"class": "tvi-panel"},
+                tags.p(
+                    {"class": "tvi-panel-intro"},
+                    "Inspect RMT disease status, mitigation, and pathway×connection components "
+                    "for Foot-and-Mouth Disease.",
+                ),
+            )
+        if iso3 not in DISEASE.index:
+            return tags.p("No disease data for this country.")
+        dr = DISEASE.loc[iso3]
+        ind = DISEASE_IND[DISEASE_IND["iso3"] == iso3].copy()
+
+        n_avail = int(dr.get("disease_indicators_available", 0) or 0)
+        n_tot = int(dr.get("disease_indicators_total", 2) or 2)
+        countries_with_any = int(DISEASE["disease_exposure"].notna().sum())
+        n_countries = len(DISEASE)
+
+        def ind_rows(codes):
+            rows = []
+            for code in codes:
+                sub = ind[ind["indicator_code"] == code]
+                if sub.empty:
+                    continue
+                r = sub.iloc[0]
+                missing = bool(r.get("missing_data_flag")) or pd.isna(r.get("score_100"))
+                raw = r.get("score")
+                scale = r.get("score_scale", "")
+                raw_txt = (
+                    MISSING_DATA["missing_label"]
+                    if missing or pd.isna(raw)
+                    else f"{float(raw):g}"
+                )
+                score_cell = (
+                    tags.td({"class": "tvi-missing"}, MISSING_DATA["missing_label"])
+                    if missing
+                    else tags.td(f"{float(r['score_100']):.0f} / 100 (raw {raw_txt} · {scale})")
+                )
+                year_val = r.get("assessment_year")
+                year = (
+                    "—"
+                    if missing or year_val is None or pd.isna(year_val)
+                    else str(int(year_val))
+                )
+                name = r.get("indicator_name", "")
+                if name is None or (isinstance(name, float) and pd.isna(name)):
+                    name = code
+                source = r.get("source", "—")
+                if source is None or (isinstance(source, float) and pd.isna(source)):
+                    source = "—"
+                interp = r.get("interpretation", "")
+                if interp is None or (isinstance(interp, float) and pd.isna(interp)):
+                    interp = ""
+                rows.append(
+                    tags.tr(
+                        tags.td(tags.strong(code)),
+                        tags.td(str(name)),
+                        score_cell,
+                        tags.td(year),
+                        tags.td(str(source)),
+                        tags.td(str(interp)),
+                    )
+                )
+            return rows
+
+        status_raw = dr.get("disease_status_raw")
+        mit_raw = dr.get("mitigation_raw")
+        raw_risk = dr.get("rmt_raw_risk")
+        formula_note = (
+            f"RMT raw risk = (status {MISSING_DATA['missing_label'] if pd.isna(status_raw) else int(status_raw)} "
+            f"+ (4 − mitigation "
+            f"{'0*' if pd.isna(mit_raw) else f'{float(mit_raw):g}'})) "
+            f"× pathway term → {_fmt(raw_risk, 1)}"
+        )
+        if pd.isna(mit_raw) and not pd.isna(status_raw):
+            formula_note += " (*mitigation missing defaults to 0 per Nexus RMT)"
+
+        return TagList(
+            ui.div(
+                {"class": "tvi-panel"},
+                tags.h2(f"Disease exposure — {dr['country']}"),
+                ui.div(
+                    {"class": "tvi-coverage"},
+                    tags.span(f"Country RMT inputs: {n_avail} / {n_tot}"),
+                    tags.span("·"),
+                    tags.span(
+                        f"RMT coverage (disease status): {countries_with_any} / {n_countries} countries"
+                    ),
+                ),
+                tags.p(
+                    {"class": "tvi-panel-intro"},
+                    formula_note,
+                ),
+                ui.div(
+                    {"class": "tvi-grid-3"},
+                    scorecard(
+                        "Disease status (circulation)",
+                        "exposure",
+                        dr["domestic_exposure"],
+                        classify_score(
+                            None
+                            if pd.isna(dr["domestic_exposure"])
+                            else float(dr["domestic_exposure"])
+                        ),
+                        "RMT disease-status score normalised 0–100 (0=free … 3=highly endemic).",
+                        "Source-country circulation component",
+                    ),
+                    scorecard(
+                        "Mitigation gap",
+                        "exposure",
+                        dr["trade_movement_exposure"],
+                        classify_score(
+                            None
+                            if pd.isna(dr["trade_movement_exposure"])
+                            else float(dr["trade_movement_exposure"])
+                        ),
+                        "Higher = weaker mitigation (RMT 0–4 inverted). Missing mitigation → full gap.",
+                        "Source-country control component",
+                    ),
+                    scorecard(
+                        "Disease Exposure (overall)",
+                        "exposure",
+                        dr["disease_exposure"],
+                        classify_score(
+                            None
+                            if pd.isna(dr["disease_exposure"])
+                            else float(dr["disease_exposure"])
+                        ),
+                        "RMT formula with provisional pathway connections, scaled 0–100.",
+                        f"TVI weight {DIMENSION_WEIGHTS['disease_exposure']:.0%}",
+                    ),
+                ),
+            ),
+            ui.div(
+                {"class": "tvi-panel"},
+                tags.h2("RMT component detail"),
+                output_widget("disease_chart", height="300px"),
+                tags.h3("Disease status & mitigation"),
+                tags.table(
+                    {"class": "tvi-legal-table"},
+                    tags.thead(
+                        tags.tr(
+                            tags.th("Code"),
+                            tags.th("Indicator"),
+                            tags.th("Score"),
+                            tags.th("Year"),
+                            tags.th("Source"),
+                            tags.th("Interpretation"),
+                        )
+                    ),
+                    tags.tbody(*ind_rows(["DS-STATUS", "DS-MITIG"])),
+                ),
+                tags.h3("Pathways (provisional connections)"),
+                tags.table(
+                    {"class": "tvi-legal-table"},
+                    tags.thead(
+                        tags.tr(
+                            tags.th("Code"),
+                            tags.th("Indicator"),
+                            tags.th("Score"),
+                            tags.th("Year"),
+                            tags.th("Source"),
+                            tags.th("Interpretation"),
+                        )
+                    ),
+                    tags.tbody(*ind_rows(["DS-PATH"])),
+                ),
+                tags.p(
+                    {"class": "tvi-panel-intro"},
+                    "Connections are provisional mid-level pathway scores until bilateral "
+                    "UN Comtrade / proximity / transport inputs are added. This is source-hazard "
+                    "potential under the RMT formula — not yet a full target←source entry matrix.",
+                ),
+            ),
+        )
+
+    @render_widget
+    def disease_chart():
+        iso3 = input.disease_country()
+        import plotly.graph_objects as go
+
+        if not iso3:
+            fig = go.Figure()
+            fig.update_layout(
+                height=280,
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                annotations=[
+                    dict(
+                        text="Select a country to view RMT components",
+                        xref="paper",
+                        yref="paper",
+                        x=0.5,
+                        y=0.5,
+                        showarrow=False,
+                        font=dict(color="#5A6A7A"),
+                    )
+                ],
+            )
+            return fig
+        return disease_indicator_bars(DISEASE_IND, iso3)
+
+    @render.ui
+    def economic_body():
+        iso3 = input.economic_country()
+        if not iso3:
+            return ui.div(
+                {"class": "tvi-panel"},
+                tags.p(
+                    {"class": "tvi-panel-intro"},
+                    "Inspect livestock importance, export exposure, import dependence, "
+                    "and trade concentration (mock scores until FAOSTAT / Comtrade are wired).",
+                ),
+            )
+        if iso3 not in ECONOMIC.index:
+            return tags.p("No economic data for this country.")
+        er = ECONOMIC.loc[iso3]
+        ind = ECONOMIC_IND[ECONOMIC_IND["iso3"] == iso3].copy()
+
+        n_avail = int(er.get("economic_indicators_available", 0) or 0)
+        n_tot = int(er.get("economic_indicators_total", len(ECONOMIC_INDICATORS)) or 4)
+        countries_with_any = int(ECONOMIC["economic_sensitivity"].notna().sum())
+        n_countries = len(ECONOMIC)
+
+        def ind_rows(codes):
+            rows = []
+            for code in codes:
+                sub = ind[ind["indicator_code"] == code]
+                if sub.empty:
+                    continue
+                r = sub.iloc[0]
+                missing = bool(r.get("missing_data_flag")) or pd.isna(r.get("score_100"))
+                score_cell = (
+                    tags.td({"class": "tvi-missing"}, MISSING_DATA["missing_label"])
+                    if missing
+                    else tags.td(f"{float(r['score_100']):.0f} / 100")
+                )
+                name = r.get("indicator_name", "")
+                if name is None or (isinstance(name, float) and pd.isna(name)):
+                    name = code
+                source = r.get("source", "—")
+                if source is None or (isinstance(source, float) and pd.isna(source)):
+                    source = "—"
+                interp = r.get("interpretation", "")
+                if interp is None or (isinstance(interp, float) and pd.isna(interp)):
+                    interp = ECONOMIC_INDICATORS.get(code, {}).get("description", "")
+                if not missing and pd.notna(r.get("score_100")):
+                    interp = (
+                        f"{classify_score(float(r['score_100']))} sensitivity. " + str(interp)
+                    )
+                rows.append(
+                    tags.tr(
+                        tags.td(tags.strong(code)),
+                        tags.td(str(name)),
+                        score_cell,
+                        tags.td("—"),
+                        tags.td(str(source)),
+                        tags.td(str(interp)),
+                    )
+                )
+            return rows
+
+        return TagList(
+            ui.div(
+                {"class": "tvi-panel"},
+                tags.h2(f"Economic sensitivity — {er['country']}"),
+                ui.div(
+                    {"class": "tvi-coverage"},
+                    tags.span(f"Country indicator coverage: {n_avail} / {n_tot}"),
+                    tags.span("·"),
+                    tags.span(
+                        f"Economic coverage: {countries_with_any} / {n_countries} countries"
+                    ),
+                    tags.span("·"),
+                    tags.span("MOCK data"),
+                ),
+                ui.div(
+                    {"class": "tvi-grid-3"},
+                    scorecard(
+                        "Production at risk",
+                        "economic",
+                        er["livestock_importance"],
+                        classify_score(
+                            None
+                            if pd.isna(er["livestock_importance"])
+                            else float(er["livestock_importance"])
+                        ),
+                        "Livestock economic importance (mock).",
+                        "EC-LIV",
+                    ),
+                    scorecard(
+                        "Trade exposure",
+                        "economic",
+                        (
+                            round(
+                                (
+                                    float(er["export_exposure"])
+                                    + float(er["import_dependence"])
+                                    + float(er["trade_concentration"])
+                                )
+                                / 3.0,
+                                1,
+                            )
+                            if all(
+                                pd.notna(er[c])
+                                for c in (
+                                    "export_exposure",
+                                    "import_dependence",
+                                    "trade_concentration",
+                                )
+                            )
+                            else None
+                        ),
+                        classify_score(
+                            None
+                            if any(
+                                pd.isna(er[c])
+                                for c in (
+                                    "export_exposure",
+                                    "import_dependence",
+                                    "trade_concentration",
+                                )
+                            )
+                            else (
+                                float(er["export_exposure"])
+                                + float(er["import_dependence"])
+                                + float(er["trade_concentration"])
+                            )
+                            / 3.0
+                        ),
+                        "Mean of export, import and concentration (mock).",
+                        "EC-EXP · EC-IMP · EC-CON",
+                    ),
+                    scorecard(
+                        "Economic Sensitivity (overall)",
+                        "economic",
+                        er["economic_sensitivity"],
+                        classify_score(
+                            None
+                            if pd.isna(er["economic_sensitivity"])
+                            else float(er["economic_sensitivity"])
+                        ),
+                        "Equal-weight mean of the four mock indicators.",
+                        f"TVI weight {DIMENSION_WEIGHTS['economic_sensitivity']:.0%}",
+                    ),
+                ),
+            ),
+            ui.div(
+                {"class": "tvi-panel"},
+                tags.h2("Indicator detail"),
+                output_widget("economic_chart", height="300px"),
+                tags.h3("Production at risk"),
+                tags.table(
+                    {"class": "tvi-legal-table"},
+                    tags.thead(
+                        tags.tr(
+                            tags.th("Code"),
+                            tags.th("Indicator"),
+                            tags.th("Score"),
+                            tags.th("Year"),
+                            tags.th("Source"),
+                            tags.th("Interpretation"),
+                        )
+                    ),
+                    tags.tbody(*ind_rows(["EC-LIV"])),
+                ),
+                tags.h3("Export, import & concentration"),
+                tags.table(
+                    {"class": "tvi-legal-table"},
+                    tags.thead(
+                        tags.tr(
+                            tags.th("Code"),
+                            tags.th("Indicator"),
+                            tags.th("Score"),
+                            tags.th("Year"),
+                            tags.th("Source"),
+                            tags.th("Interpretation"),
+                        )
+                    ),
+                    tags.tbody(*ind_rows(["EC-EXP", "EC-IMP", "EC-CON"])),
+                ),
+            ),
+        )
+
+    @render_widget
+    def economic_chart():
+        iso3 = input.economic_country()
+        import plotly.graph_objects as go
+
+        if not iso3:
+            fig = go.Figure()
+            fig.update_layout(
+                height=280,
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                annotations=[
+                    dict(
+                        text="Select a country to view economic indicators",
+                        xref="paper",
+                        yref="paper",
+                        x=0.5,
+                        y=0.5,
+                        showarrow=False,
+                        font=dict(color="#5A6A7A"),
+                    )
+                ],
+            )
+            return fig
+        return economic_indicator_bars(ECONOMIC_IND, iso3)
+
+    @render.ui
     def legal_body():
         iso3 = input.legal_country()
         if not iso3:
@@ -697,13 +1316,30 @@ def server(input, output, session):
                 if sub.empty:
                     continue
                 r = sub.iloc[0]
-                missing = bool(r["missing_data_flag"]) or pd.isna(r.get("score_100"))
+                missing = bool(r.get("missing_data_flag")) or pd.isna(r.get("score_100"))
+                raw = r.get("score")
+                raw_txt = (
+                    MISSING_DATA["missing_label"]
+                    if missing or pd.isna(raw)
+                    else f"{float(raw):g}"
+                )
                 score_cell = (
                     tags.td({"class": "tvi-missing"}, MISSING_DATA["missing_label"])
                     if missing
-                    else tags.td(f"{r['score_100']:.0f} / 100 (raw {r['score']} / 5)")
+                    else tags.td(f"{float(r['score_100']):.0f} / 100 (raw {raw_txt} / 5)")
                 )
-                year = "—" if missing or pd.isna(r.get("assessment_year")) else str(int(r["assessment_year"]))
+                year_val = r.get("assessment_year")
+                year = (
+                    "—"
+                    if missing or year_val is None or pd.isna(year_val)
+                    else str(int(year_val))
+                )
+                name = r.get("indicator_name", "")
+                if name is None or (isinstance(name, float) and pd.isna(name)):
+                    name = code
+                source = r.get("source", "—")
+                if source is None or (isinstance(source, float) and pd.isna(source)):
+                    source = "—"
                 interp = LEGAL_INDICATORS.get(code, {}).get("description", "")
                 if not missing and pd.notna(r.get("score_100")):
                     interp = (
@@ -713,10 +1349,10 @@ def server(input, output, session):
                 rows.append(
                     tags.tr(
                         tags.td(tags.strong(code)),
-                        tags.td(r.get("indicator_name", "")),
+                        tags.td(str(name)),
                         score_cell,
                         tags.td(year),
-                        tags.td(r.get("source", "—")),
+                        tags.td(str(source)),
                         tags.td(interp),
                     )
                 )
@@ -821,7 +1457,24 @@ def server(input, output, session):
         import plotly.graph_objects as go
 
         if not iso3:
-            return go.Figure()
+            fig = go.Figure()
+            fig.update_layout(
+                height=280,
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                annotations=[
+                    dict(
+                        text="Select a country to view indicators",
+                        xref="paper",
+                        yref="paper",
+                        x=0.5,
+                        y=0.5,
+                        showarrow=False,
+                        font=dict(color="#5A6A7A"),
+                    )
+                ],
+            )
+            return fig
         return legal_indicator_bars(LEGAL_IND, iso3)
 
 

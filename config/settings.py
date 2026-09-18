@@ -126,10 +126,10 @@ MISSING_DATA = {
     "impute_with_zero": False,
     # If a component has no available indicators, component score is null.
     "require_min_indicators_per_component": 1,
-    # Country included in TVI only if all three dimensions are non-null,
-    # OR if partial_tvi is True (weighted among available dimensions).
-    "partial_tvi": False,
-    "missing_label": "Data unavailable",
+    # When legal data are missing, still compute TVI from available dimensions
+    # (disease + economic). Legal scores display as N/A.
+    "partial_tvi": True,
+    "missing_label": "N/A",
 }
 
 # ---------------------------------------------------------------------------

@@ -98,12 +98,12 @@ Design principle for this datathon prototype:
 
 From last `build_data` run (`data/processed/build_meta.json`):
 
-- Countries: **191**
-- Countries with TVI: **191**
+- Countries in master list: **191**
+- Countries with complete TVI: see latest build output (legal gaps reduce coverage when public extracts are incomplete)
 - Disease module: **MOCK**
 - Economic module: **MOCK**
-- Legal module: **PLACEHOLDER**
-- PVS source: **placeholder** (no user file in `data/raw/pvs_indicators.csv` yet)
+- Legal module: **mixed** — public PVSIS report extracts where parsed + placeholders elsewhere
+- Refresh public legal extracts: `python -m scripts.ingest_public_pvs`
 
 ---
 
@@ -354,16 +354,33 @@ Alternative weighting scenarios for sensitivity testing can call `compute_tvi(..
 
 ### What we researched
 
-- WOAH **PVS Pathway** and **PVS Information System (PVSIS)** are the authoritative homes for assessment reports and (increasingly) digital performance data.
-- Public pages describe report repositories and dashboards.
-- For this prototype we found **no public bulk API** that returns Critical Competency scores (IV-1A, IV-1B, IV-4, IV-6, IV-7) for all countries in a machine-readable table.
+- WOAH **PVS Pathway** and **PVS Information System (PVSIS)** are the authoritative homes for assessment reports and digitised Critical Competency (CC) Levels of Advancement.
+- Identifiable CC tables for all Members are **not** publicly bulk-exportable: each Member sees their own data; public dashboards are mostly anonymous cohorts ([WOAH note on PVSIS confidentiality](https://www.woah.org/en/members-experience-the-pvs-information-system-for-the-first-time/)).
+- There is **no documented public API** that returns a full country × CC score matrix for IV-1A / IV-1B / IV-4 / IV-6 / IV-7.
 
-### What the app does instead
+### Interim approach — public reports (implemented)
 
-1. Prefer a local file: `data/raw/pvs_indicators.csv` (or `.xlsx` / `.json`)
-2. If absent → generate **placeholder** observations and continue (app never depends on a live API)
-3. Store source metadata on every observation
-4. Schema documented in `data/raw/pvs_indicators.SCHEMA.csv`
+While access to the digitised PVSIS tables is requested, the prototype uses **public** Evaluation / Follow-Up reports:
+
+1. Catalog: `GET https://pvs.woah.org/pvs-is-be/api/document-management/public`
+2. PDF download: `GET https://pvs.woah.org/pvs-is-be/api/document-management/download-public/{id}`
+3. Parse Levels of Advancement for the five legal indicators from the PDF text
+
+```bash
+python -m scripts.ingest_public_pvs   # writes data/raw/pvs_indicators.csv
+python -m scripts.build_data
+```
+
+**Current coverage (last ingest):** ~**34 countries** with at least one parsed public CC score (~103 scored indicator cells). Countries without a usable public extract still use **placeholders** (clearly labelled). Failed/partial PDF parses stay **Data unavailable** (never zero).
+
+### Longer-term (preferred)
+
+Obtain an **approved extract** or Member/partner PVSIS access for the target CCs, then replace `data/raw/pvs_indicators.csv` and rebuild.
+
+### Manual file schema
+
+Prefer a local file: `data/raw/pvs_indicators.csv` (or `.xlsx` / `.json`).  
+Schema documented in `data/raw/pvs_indicators.SCHEMA.csv`.
 
 ### Required columns for real data
 
